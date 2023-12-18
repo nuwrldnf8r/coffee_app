@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react"
 
-import CameraIcon from '../icons/camera.js'
+import {CameraIcon} from '../icons/icons.js'
 
 const CameraComponent = (props) => {
     const [status, setStatus] = useState(1)
@@ -64,6 +64,9 @@ const CameraComponent = (props) => {
         </div>
         {status===1 && 
             <div class="container mx-auto text-center"><button onClick={takePhoto}><CameraIcon /></button></div>
+        }
+        {status===2 && 
+            <div class="container mx-auto text-center"><button></button></div>
         }
         </>
     )
