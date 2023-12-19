@@ -1,25 +1,18 @@
 import React, { useState, useRef, useEffect } from "react"
-
-import {CameraIcon} from '../icons/icons.js'
+import {CameraIcon, SaveIcon, RefreshIcon} from '../icons/icons.js'
+import Spinner from '../components/spinner.js'
 
 const CameraComponent = (props) => {
     const [status, setStatus] = useState(1)
     const [imageSrc, setImage] = useState("")
+    const [showSpinner, setShowSpinner] = useState(true)
    
     const videoRef = useRef(null)
     const canvasRef = useRef(null)
 
     useEffect(()=>{
         if(status===1){
-            try{
-                navigator.mediaDevices.getUserMedia({ video: true }).then(stream=>{
-                    if (videoRef.current) {     
-                        videoRef.current.srcObject = stream
-                    } 
-                })
-            } catch(e){
-                console.log('Camera not available')
-            }
+            startCamera()
         } else if (status===2){
             stopCamera()
         }
@@ -27,7 +20,19 @@ const CameraComponent = (props) => {
     },[status])
 
 
-
+    const startCamera = () => {
+        setShowSpinner(true)
+        navigator.mediaDevices.getUserMedia({ video: true }).then(stream=>{
+            setShowSpinner(false)
+            try{
+                if (videoRef.current) {     
+                    videoRef.current.srcObject = stream
+                } 
+            } catch (e) {
+                alert('Camera is not available')
+            }
+        })
+    }
 
     const takePhoto = () => {
         const video = videoRef.current
@@ -40,8 +45,8 @@ const CameraComponent = (props) => {
             context.drawImage(video, 0, 0, canvas.width, canvas.height)
             const imageDataUrl = canvas.toDataURL('image/png')
             setImage(imageDataUrl)
+            stopCamera()
             setStatus(2)
-            
         }
 
     }
@@ -53,7 +58,12 @@ const CameraComponent = (props) => {
           tracks.forEach(track => track.stop())
           videoRef.current.srcObject = null
         }
-      }
+    }
+
+    const save = () => {
+        setStatus(1)
+        props.saveImage(imageSrc)
+    }
 
     return (
         <>
@@ -62,11 +72,18 @@ const CameraComponent = (props) => {
             <canvas ref={canvasRef}  width="640" height="480" class="hidden" ></canvas>
             <img src={imageSrc} width="640" height="480" class={status===2?"mx-auto":"hidden"}/>
         </div>
+        
         {status===1 && 
             <div class="container mx-auto text-center"><button onClick={takePhoto}><CameraIcon /></button></div>
         }
         {status===2 && 
-            <div class="container mx-auto text-center"><button></button></div>
+            <div class="container mx-auto text-center">
+                <button class="w-20 align-middle mx-3" onClick={save}><SaveIcon/> Save</button>
+                <button class="w-20 align-middle mx-3" onClick={()=>{setStatus(1);startCamera()}}><RefreshIcon/> Redo</button>
+            </div>
+        }
+        {showSpinner && 
+            <div style={{position: 'absolute', width: '100%', top: 100, textAlign: 'center'}}><Spinner /></div>
         }
         </>
     )

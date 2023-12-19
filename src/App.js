@@ -1,6 +1,6 @@
 import React from 'react';
-import { useState, useEffect} from 'react'
-import CameraComponent  from './components/camera';
+//import { useState, useEffect} from 'react'
+import InField from './pages/infield_collection'
 
 //https://github.com/tailwindlabs/tailwindcss-forms
 //https://tailwindcss.com/docs/margin
@@ -15,36 +15,17 @@ import CameraComponent  from './components/camera';
       </div>
 */
 
+/*
+
+*/
+
 
 function App() {
-  const [coordinates, setCoordinates] = useState({latitude:0,longitude:0, accuracy: 0, altitude: 0, altitudeAccuracy: 0})
-  const [data, setData] = useState(null)
-
-  useEffect(() => {
-    // Check if the browser supports geolocation
-    if (navigator.geolocation) {
-      // Get the user's current position
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude, accuracy, altitude, altitudeAccuracy } = position.coords;
-          setCoordinates({ latitude, longitude, accuracy, altitude, altitudeAccuracy});
-        },
-        (error) => {
-          console.error('Error getting user location:', error.message);
-        }
-      );
-    } else {
-      console.error('Geolocation is not supported by this browser.');
-    }
-  }, []);
-
+  
   return (
     <div>
-      <div class="container mx-auto text-center text-slate-600 p-3 text-lg font-semibold">
-        Hello world!
-      </div>
+            <InField /> 
       
-      <CameraComponent/>
     </div>
     
   );
