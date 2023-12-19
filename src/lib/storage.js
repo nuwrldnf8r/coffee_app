@@ -1,5 +1,4 @@
 import Geohash from 'latlon-geohash'
-import BN from 'bn.js'
 /*
     Need to store locally, then check if internet connection is available and store in db.
     Update when last uploaded online.

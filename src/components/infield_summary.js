@@ -1,5 +1,5 @@
 import React from 'react'
-import {SaveIcon, RefreshIcon} from '../icons/icons.js'
+import {SaveIcon} from '../icons/icons.js'
 
 const formatTimestamp = (timestamp, timeZone) => {
     const date = new Date(timestamp);

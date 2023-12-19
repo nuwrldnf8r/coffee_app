@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react"
 import {CameraIcon, SaveIcon, RefreshIcon} from '../icons/icons.js'
 import Spinner from '../components/spinner.js'
 
-const wait = (tm) => new Promise(r=>setTimeout(()=>{r()},tm))
+//const wait = (tm) => new Promise(r=>setTimeout(()=>{r()},tm))
 
 const CameraComponent = (props) => {
     const [status, setStatus] = useState(1)
@@ -75,7 +75,7 @@ const CameraComponent = (props) => {
         <div class="container box-border mx-10 mb-5 mt-10 w-fit">
             <video ref={videoRef} width="640" height="480" autoPlay class={status===1?"mx-auto":"hidden"}></video>
             <canvas ref={canvasRef}  width="640" height="480" class="hidden" ></canvas>
-            <img src={imageSrc} width="640" height="480" class={status===2?"mx-auto":"hidden"}/>
+            <img src={imageSrc} alt="Capture" width="640" height="480" class={status===2?"mx-auto":"hidden"}/>
         </div>
         
         {status===1 && 
