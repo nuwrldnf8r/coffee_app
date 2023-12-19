@@ -4,6 +4,7 @@ import CameraComponent  from '../components/camera'
 import Weight from '../components/weight'
 import Summary from '../components/infield_summary'
 import {ArrowRight} from '../icons/icons'
+import {LocalStore} from '../lib/storage'
 
 const InField = (props) => {
     const [status, setStatus] = useState(0)
@@ -28,7 +29,7 @@ const InField = (props) => {
         } else {
           console.error('Geolocation is not supported by this browser.');
         }
-      }, [])
+      })
 
       let setWeightData = () => {
         let _data = Object.assign({},data)
@@ -46,13 +47,19 @@ const InField = (props) => {
         setStatus(2)
       }
 
+      const save = async () => {
+        let collected = LocalStore.addCollectedData(data)
+        console.log(collected.id())
+        
+      }
+
       return (
         <>
             <div class="text-center text-base m-2">In-Field Collection</div>
             {status===0 && 
                 <>
                 <Weight setWeight={setWeight} value={weight}/>
-                <div class="mx-auto text-center"><button onClick={setWeightData}>Next <ArrowRight/></button></div>
+                <div class="mx-auto text-center"><button onClick={setWeightData} disabled={!weight || weight.toString()===''} class={(!weight || weight.toString()==='')?'text-slate-400':''}>Next <ArrowRight/></button></div>
                 </>
             }
             {status===1 && 
@@ -61,7 +68,7 @@ const InField = (props) => {
                 </>
             }
             {status===2 && 
-                <Summary {...data} />
+                <Summary {...data} save={save}/>
             }
             
         </>

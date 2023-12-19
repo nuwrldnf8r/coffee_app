@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from "react"
 import {CameraIcon, SaveIcon, RefreshIcon} from '../icons/icons.js'
 import Spinner from '../components/spinner.js'
 
+const wait = (tm) => new Promise(r=>setTimeout(()=>{r()},tm))
+
 const CameraComponent = (props) => {
     const [status, setStatus] = useState(1)
     const [imageSrc, setImage] = useState("")
@@ -22,7 +24,7 @@ const CameraComponent = (props) => {
 
     const startCamera = () => {
         setShowSpinner(true)
-        navigator.mediaDevices.getUserMedia({ video: true }).then(stream=>{
+        navigator.mediaDevices.getUserMedia({ video: {facingMode: 'environment'} }).then(stream=>{
             setShowSpinner(false)
             try{
                 if (videoRef.current) {     
@@ -39,24 +41,27 @@ const CameraComponent = (props) => {
         const canvas = canvasRef.current
         
         if (video && canvas) {
+            
             const context = canvas.getContext('2d')
             canvas.height = video.videoHeight
             canvas.width = video.videoWidth
             context.drawImage(video, 0, 0, canvas.width, canvas.height)
+            stopCamera(video.srcObject)
             const imageDataUrl = canvas.toDataURL('image/png')
             setImage(imageDataUrl)
-            stopCamera()
             setStatus(2)
+            
+            
         }
 
     }
 
-    const stopCamera = () => {
-        const stream = videoRef.current.srcObject
+    const stopCamera = (stream) => {
         if (stream) {
-          const tracks = stream.getTracks()
-          tracks.forEach(track => track.stop())
-          videoRef.current.srcObject = null
+            console.log('stopping camera')
+            const tracks = stream.getTracks()
+            tracks.forEach(track => track.stop())
+            videoRef.current.srcObject = null
         }
     }
 

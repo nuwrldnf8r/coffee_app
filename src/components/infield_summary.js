@@ -1,4 +1,5 @@
 import React from 'react'
+import {SaveIcon, RefreshIcon} from '../icons/icons.js'
 
 const formatTimestamp = (timestamp, timeZone) => {
     const date = new Date(timestamp);
@@ -28,16 +29,19 @@ const trimAfterDot = (inputString) => {
 
 const Summary = (props) => {
     return (
-        <div class="grid grid-cols-1 m-5">
-            <div class="my-2">GPS: 
+        <div class="grid grid-cols-1 mx-5 mt-2">
+            <div class="text-xs">GPS:</div>
+            <div class="mb-2 text-xs text-center">
                 <div class="inline text-slate-500">{props.coordinates.latitude} {props.coordinates.longitude}</div> 
-                <div class="text-xs  text-slate-500 text-right">(accuracy: {trimAfterDot(props.coordinates.accuracy.toString())})</div>
+                <div class="text-xs  text-slate-500 text-center">(accuracy: {trimAfterDot(props.coordinates.accuracy.toString())})</div>
             </div>
-            <div>Timestamp:</div>
-            <div class="mb-2  text-slate-500">{formatTimestamp(props.ts)}</div>
-            <div class="my-2">Recorded weight: <div class="inline text-slate-500">{props.weight}</div></div>
-            <div>Bucket Photo:</div>
+            <div class="text-xs">Timestamp:</div>
+            <div class="mb-2 text-xs text-slate-500 text-center">{formatTimestamp(props.ts)}</div>
+            <div class="text-xs">Recorded weight:</div>
+            <div class="mb-2 text-xs text-center"> <div class="inline text-slate-500">{props.weight}</div></div>
+            <div class="text-xs">Bucket Photo:</div>
             <div><img src={props.image} alt="Bucket"/></div>
+            <div class="text-center mt-3 align-middle"><button onClick={props.save}><SaveIcon/> Save</button></div>
         </div>
     )
 }
