@@ -46,8 +46,9 @@ const CameraComponent = (props) => {
             canvas.height = video.videoHeight
             canvas.width = video.videoWidth
             context.drawImage(video, 0, 0, canvas.width, canvas.height)
-            stopCamera(video.srcObject)
+            stopCamera()
             const imageDataUrl = canvas.toDataURL('image/png')
+            //console.log(imageDataUrl)
             setImage(imageDataUrl)
             setStatus(2)
             
@@ -56,7 +57,8 @@ const CameraComponent = (props) => {
 
     }
 
-    const stopCamera = (stream) => {
+    const stopCamera = () => {
+        let stream = videoRef.current.srcObject
         if (stream) {
             console.log('stopping camera')
             const tracks = stream.getTracks()
@@ -66,7 +68,9 @@ const CameraComponent = (props) => {
     }
 
     const save = () => {
-        setStatus(1)
+        //setStatus(1)
+        //stopCamera()
+        //console.log(imageSrc)
         props.saveImage(imageSrc)
     }
 

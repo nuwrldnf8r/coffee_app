@@ -5,11 +5,12 @@ import Weight from '../components/weight'
 import Summary from '../components/infield_summary'
 import {ArrowRight} from '../icons/icons'
 import {LocalStore} from '../lib/storage'
+import {QR} from '../components/qr'
 
 const InField = (props) => {
     const [status, setStatus] = useState(0)
     const [weight, setWeight] = useState()
-    const [data, setData] = useState({weight: 0, coordinates: {latitude:0,longitude:0, accuracy: 0, altitude: 0, altitudeAccuracy: 0}, image: null, ts: 0})
+    const [data, setData] = useState({weight: 0, coordinates: {latitude:0,longitude:0, accuracy: 0, altitude: 0, altitudeAccuracy: 0}, image: null, ts: 0, bucketID: null})
     
     useEffect(() => {
         // Check if the browser supports geolocation
@@ -36,15 +37,23 @@ const InField = (props) => {
         _data.weight = weight
         setData(_data)
         setWeight(0)
-        setStatus(1)
+        setStatus(2)
       }
 
       let setImageData = (imgData) => {
+        console.log(imgData)
         let _data = Object.assign({},data)
         _data.image = imgData
         _data.ts = Date.now()
         setData(_data)
-        setStatus(2)
+        setStatus(4)
+      }
+
+      let qrResult = (result) => {
+        let _data = Object.assign({},data)
+        _data.bucketID = result
+        setData(_data)
+        setStatus(3)
       }
 
       const save = async () => {
@@ -58,16 +67,29 @@ const InField = (props) => {
             <div class="text-center text-base m-2">In-Field Collection</div>
             {status===0 && 
                 <>
-                <Weight setWeight={setWeight} value={weight}/>
-                <div class="mx-auto text-center"><button onClick={setWeightData} disabled={!weight || weight.toString()===''} class={(!weight || weight.toString()==='')?'text-slate-400':''}>Next <ArrowRight/></button></div>
+                  <div class="mx-auto text-center">Harvester Info goes here</div>
+                  <div class="mx-auto text-center"><button onClick={()=>setStatus(1)}>Next <ArrowRight/></button></div>
                 </>
             }
             {status===1 && 
+              <>
+                <Weight setWeight={setWeight} value={weight}/>
+                <div class="mx-auto text-center"><button onClick={setWeightData} disabled={!weight || weight.toString()===''} class={(!weight || weight.toString()==='')?'text-slate-400':''}>Next <ArrowRight/></button></div>
+              </>
+            }
+            {status===2 && 
+              <>
+              <div>Please scan the bucket</div>
+              <QR result={qrResult} />
+              </>
+            }
+            {status===3 && 
                 <>
+                <div>Take a photo of the bucket</div>
                 <CameraComponent saveImage={setImageData}/>
                 </>
             }
-            {status===2 && 
+            {status===4 && 
                 <Summary {...data} save={save}/>
             }
             
