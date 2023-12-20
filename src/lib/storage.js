@@ -65,10 +65,11 @@ function decodeId(id) {
     let tshex = hex.substring(0,14)
     let ts = parseInt(tshex,16)
     let weight = hexToWeight(hex.substring(14,26))
-    let geohex = hex.substring(26)
+    let bucketId = parseInt(hex.substring(26,32),16)
+    let geohex = hex.substring(32)
     let geohash = hexToGeohash(geohex)
     let coordinates = Geohash.decode(geohash)
-    return {coordinates, ts, weight}
+    return {coordinates, ts, weight, bucketId}
 }
   
 class CollectedData{
@@ -85,7 +86,8 @@ class CollectedData{
         let geohex = geohashToHex(geohash)
         let tshex = this._data.ts.toString(16).padStart(14, '0')
         let weighthex = weightToHex(this._data.weight)
-        return hexToBase64(tshex + weighthex + geohex)
+        let bucketHex = this._data.bucketID.toString(16).padStart(6,'0')
+        return hexToBase64(tshex + weighthex + bucketHex + geohex)
         //return  tshex + geohex
     }
 
@@ -95,6 +97,7 @@ class CollectedData{
         delete data.weight
         data.onlyLocal = true
         let store = LocalStore.getData(Keys.localStorageKeyCollected)
+        console.log('ID: ' + this.id())
         if(store[this.id()] && !data.onlyLocal) {
             throw new Error("Collection already uploaded")
         }
@@ -120,6 +123,7 @@ export const LocalStore = {
             item.coordinates = decoded.coordinates
             item.ts = decoded.ts
             item.weight = decoded.weight
+            item.bucketId = decoded.bucketId
             item.id = key
             return item
         })

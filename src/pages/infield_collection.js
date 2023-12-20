@@ -54,11 +54,17 @@ const InField = (props) => {
       }
 
       let qrResult = (result) => {
-        if(data.QR) return
+        console.log('here')
+        if(data.QR) return true
+        console.log('Result:' + result)
+        if(result.substr(0,4)!=='bkt:') return false
+        result = parseInt(result.substring(4))
+        console.log('result: ' + result)
         let _data = Object.assign({},data)
         _data.bucketID = result
         setData(_data)
         setStatus(3)
+        return true
       }
 
       const save = async () => {
