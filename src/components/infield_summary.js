@@ -39,7 +39,7 @@ const Summary = (props) => {
             <div class="mb-2 text-xs text-slate-500 text-center">{formatTimestamp(props.ts)}</div>
             <div class="text-xs  mb-2">Recorded weight:
             <div class="inline text-slate-500 pl-5">{props.weight}</div></div>
-            <div class="text-xs">Bucket ({props.bucketID}):</div>
+            <div class="text-xs">Bucket <div class="inline text-slate-500">({props.bucketID})</div>:</div>
             <div class="text-center mx-auto"><img src={props.image} alt="Bucket" width='80%' class='mx-auto mt-1 rounded-md'/></div>
             <div class="text-center mt-3 align-middle"><button onClick={props.save}><SaveIcon/> Save</button></div>
         </div>

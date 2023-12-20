@@ -78,7 +78,7 @@ const InField = (props) => {
             <div class="text-center text-base m-2">In-Field Collection</div>
             {status===0 && 
                 <>
-                  <div>v0.01</div>
+                  <div>v0.002</div>
                   <div class="mx-auto text-center">Harvester Info goes here</div>
                   <div class="mx-auto text-center"><button onClick={()=>setStatus(1)}>Next <ArrowRight/></button></div>
                 </>
