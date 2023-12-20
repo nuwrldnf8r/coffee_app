@@ -10,25 +10,27 @@ import {QR} from '../components/qr'
 const InField = (props) => {
     const [status, setStatus] = useState(0)
     const [weight, setWeight] = useState()
-    const [data, setData] = useState({weight: 0, coordinates: {latitude:0,longitude:0, accuracy: 0, altitude: 0, altitudeAccuracy: 0}, image: null, ts: 0, bucketID: null})
+    const [data, setData] = useState({weight: 0, coordinates: null, image: null, ts: 0, bucketID: null})
     
     useEffect(() => {
-        // Check if the browser supports geolocation
-        if (navigator.geolocation) {
-          // Get the user's current position
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              const { latitude, longitude, accuracy, altitude, altitudeAccuracy } = position.coords;
-              let _data = Object.assign({},data)
-              _data.coordinates = {latitude, longitude, accuracy, altitude, altitudeAccuracy}
-              setData(_data);
-            },
-            (error) => {
-              console.error('Error getting user location:', error.message);
-            }
-          );
-        } else {
-          console.error('Geolocation is not supported by this browser.');
+        if(!data.coordinates){
+          // Check if the browser supports geolocation
+          if (navigator.geolocation) {
+            // Get the user's current position
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const { latitude, longitude, accuracy, altitude, altitudeAccuracy } = position.coords;
+                let _data = Object.assign({},data)
+                _data.coordinates = {latitude, longitude, accuracy, altitude, altitudeAccuracy}
+                setData(_data);
+              },
+              (error) => {
+                console.error('Error getting user location:', error.message);
+              }
+            );
+          } else {
+            console.error('Geolocation is not supported by this browser.');
+          }
         }
       })
 
@@ -41,15 +43,18 @@ const InField = (props) => {
       }
 
       let setImageData = (imgData) => {
-        console.log(imgData)
+        console.log('here')
+        if(data.image) return
         let _data = Object.assign({},data)
         _data.image = imgData
         _data.ts = Date.now()
         setData(_data)
+        console.log(_data.image)
         setStatus(4)
       }
 
       let qrResult = (result) => {
+        if(data.QR) return
         let _data = Object.assign({},data)
         _data.bucketID = result
         setData(_data)

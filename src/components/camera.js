@@ -6,7 +6,7 @@ import Spinner from '../components/spinner.js'
 
 const CameraComponent = (props) => {
     const [status, setStatus] = useState(1)
-    const [imageSrc, setImage] = useState("")
+    const [imageSrc, setImage] = useState(null)
     const [showSpinner, setShowSpinner] = useState(true)
    
     const videoRef = useRef(null)
@@ -76,7 +76,7 @@ const CameraComponent = (props) => {
 
     return (
         <>
-        <div class="container box-border mx-10 mb-5 mt-10 w-fit">
+        <div class="container box-border mb-5 mt-3 w-fit">
             <video ref={videoRef} width="640" height="480" autoPlay class={status===1?"mx-auto":"hidden"}></video>
             <canvas ref={canvasRef}  width="640" height="480" class="hidden" ></canvas>
             <img src={imageSrc} alt="Capture" width="640" height="480" class={status===2?"mx-auto":"hidden"}/>
@@ -87,7 +87,7 @@ const CameraComponent = (props) => {
         }
         {status===2 && 
             <div class="container mx-auto text-center">
-                <button class="w-20 align-middle mx-3" onClick={save}><SaveIcon/> Save</button>
+                <button class={imageSrc?"w-20 align-middle mx-3":"w-20 align-middle mx-3 text-slate-400"} onClick={save}  disabled={!imageSrc}><SaveIcon/> Save</button>
                 <button class="w-20 align-middle mx-3" onClick={()=>{setStatus(1);startCamera()}}><RefreshIcon/> Redo</button>
             </div>
         }

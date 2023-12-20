@@ -3,6 +3,6 @@ import {QrScanner} from '@yudiel/react-qr-scanner'
 
 export const QR = (props)=> {
     const [stopScanning, setStopScanning] = useState(false)
-    return <QrScanner onDecode={result=>{setStopScanning(true);props.result(result)}} onError={e=>console.log(e)} stopScanning={stopScanning}/>
+    return <QrScanner scanDelay={1000} onDecode={result=>{setStopScanning(true);props.result(result)}} onError={e=>console.log(e)} stopScanning={stopScanning}/>
 }
 
