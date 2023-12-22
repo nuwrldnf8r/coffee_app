@@ -3,7 +3,7 @@ import { useState, useEffect} from 'react'
 import CameraComponent  from '../components/camera'
 import Weight from '../components/weight'
 import Summary from '../components/infield_summary'
-import {ArrowRight} from '../icons/icons'
+import {ArrowRightIcon, CameraIcon, QRIcon, BucketIcon} from '../icons/icons'
 import {LocalStore} from '../lib/storage'
 import {QR} from '../components/qr'
 
@@ -75,29 +75,29 @@ const InField = (props) => {
 
       return (
         <>  
-            <div class="text-center text-base m-2">In-Field Collection</div>
+            <div class="text-center text-base m-2 font-medium">In-Field Collection</div>
             {status===0 && 
                 <>
-                  <div>v0.002</div>
+                  
                   <div class="mx-auto text-center">Harvester Info goes here</div>
-                  <div class="mx-auto text-center"><button onClick={()=>setStatus(1)}>Next <ArrowRight/></button></div>
+                  <div class="mx-auto text-center font-medium mt-2"><button onClick={()=>setStatus(1)}>Next <ArrowRightIcon/></button></div>
                 </>
             }
             {status===1 && 
               <>
                 <Weight setWeight={setWeight} value={weight}/>
-                <div class="mx-auto text-center"><button onClick={setWeightData} disabled={!weight || weight.toString()===''} class={(!weight || weight.toString()==='')?'text-slate-400':''}>Next <ArrowRight/></button></div>
+                <div class="mx-auto text-center font-medium mt-2"><button onClick={setWeightData} disabled={!weight || weight.toString()===''} class={(!weight || weight.toString()==='')?'text-slate-400':''}>Next <ArrowRightIcon/></button></div>
               </>
             }
             {status===2 && 
               <>
-              <div>Please scan the bucket</div>
+              <div class="text-center align-middle mb-2 font-medium"><QRIcon/> <div class="inline align-middle">Please scan the bucket</div> <BucketIcon/></div>
               <QR result={qrResult} />
               </>
             }
             {status===3 && 
                 <>
-                <div>Take a photo of the bucket</div>
+                <div class="text-center align-middle mb-2 font-medium"><CameraIcon/> <div class="inline align-middle">Take a photo of the bucket</div> <BucketIcon/></div>
                 <CameraComponent saveImage={setImageData}/>
                 </>
             }

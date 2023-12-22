@@ -76,17 +76,17 @@ const CameraComponent = (props) => {
 
     return (
         <>
-        <div class="container box-border mb-5 mt-3 w-fit">
-            <video ref={videoRef} width="640" height="480" autoPlay class={status===1?"mx-auto":"hidden"}></video>
-            <canvas ref={canvasRef}  width="640" height="480" class="hidden" ></canvas>
+        <div class="container box-border mb-2 mt-3 w-full wx-auto max-w-md text-center p-2">
+            <video ref={videoRef}  autoPlay class={status===1?"w-full":"hidden"}></video>
+            <canvas ref={canvasRef} class="hidden" ></canvas>
             <img src={imageSrc} alt="Capture" width="640" height="480" class={status===2?"mx-auto":"hidden"}/>
         </div>
         
         {status===1 && 
-            <div class="container mx-auto text-center"><button onClick={takePhoto}><CameraIcon /></button></div>
+            <div class="container mx-auto text-center font-medium"><button onClick={takePhoto}><CameraIcon /></button></div>
         }
         {status===2 && 
-            <div class="container mx-auto text-center">
+            <div class="container mx-auto text-center font-medium">
                 <button class={imageSrc?"w-20 align-middle mx-3":"w-20 align-middle mx-3 text-slate-400"} onClick={save}  disabled={!imageSrc}><SaveIcon/> Save</button>
                 <button class="w-20 align-middle mx-3" onClick={()=>{setStatus(1);startCamera()}}><RefreshIcon/> Redo</button>
             </div>

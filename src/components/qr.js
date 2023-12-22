@@ -8,6 +8,8 @@ export const QR = (props)=> {
         if(!quit) return
         setStopScanning(true)
     }
-    return <QrScanner scanDelay={1000} onDecode={sendResult} onError={e=>console.log(e)} stopScanning={stopScanning}/>
+    return <div class="container box-border mb-2 mt-3 w-full wx-auto max-w-md text-center p-2">
+        <QrScanner scanDelay={1000} onDecode={sendResult} onError={e=>console.log(e)} stopScanning={stopScanning}/>
+        </div>
 }
 
