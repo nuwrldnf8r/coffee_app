@@ -34,13 +34,12 @@ function App() {
   useEffect(()=>{
     if(status===AppStatus.startup){
       setStatus(AppStatus.initializing)
-      if(!AppStatus.initializing) return
       //check if user exists
       //if not:
       setTimeout(()=>setPage('register'),1000)
       
     }
-  })
+  },[status])
 
   const signUp = (mobile) => {
     setPage('signup#' + mobile)
