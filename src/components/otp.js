@@ -1,11 +1,11 @@
 import React, {useState, useRef, createRef, useEffect} from 'react'
 
-const OTC = (props) => {
+const OTP = (props) => {
     const [otp, setOTP] = useState('')
     const inputStyle="flex-auto bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500  w-8 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mx-1 text-center"
     const inputRefs = useRef(Array(props.length).fill(null).map(() => createRef()))
     const inputs = Array(props.length).fill(null).map((_,index)=>(
-        <input type="text" key={'input' + index} class={inputStyle} ref={inputRefs.current[index]}
+        <input type="number" key={'input' + index} class={inputStyle} ref={inputRefs.current[index]}
             onChange={e=>inputChange(index,e.target.value)}
         />
     ))
@@ -37,4 +37,4 @@ const OTC = (props) => {
     )
 }
 
-export default OTC
+export default OTP

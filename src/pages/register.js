@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState} from 'react'
 import Button from '../components/button'
-import OTC from '../components/otc'
+import OTP from '../components/otp'
 import {SaveIcon} from '../icons/icons'
 
 const Action = {signUp: 0, logIn: 1}
@@ -72,7 +72,7 @@ const Register = (props) => {
 
             {status===1 && 
                 <>
-                    <OTC length={5} onComplete={receivedOTC} />
+                    <OTP length={5} onComplete={receivedOTC} />
                 </>
             }
         </>
