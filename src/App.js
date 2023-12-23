@@ -5,6 +5,10 @@ import { useState, useEffect} from 'react'
 import Register from './pages/register'
 import Splash from './pages/splash'
 import SignUp from './pages/signup'
+import {add, get} from './lib/ipfs'
+
+window.add = add
+window.get = get
 
 //https://github.com/tailwindlabs/tailwindcss-forms
 //https://tailwindcss.com/docs/margin
