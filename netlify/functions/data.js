@@ -27,18 +27,34 @@ const getKeyPair = (mobile) => {
 }
 
 const createPrincipal = (mobile) => {
-  const kp = getKeyPair()
-  const principal = Principal.fromHex(kp.publicKeyHex)
-  return principal
+  console.log('creating Principal')
+  try{
+    const kp = getKeyPair(mobile)
+    console.log('got keypair')
+    const principal = Principal.fromHex(kp.publicKeyHex)
+    return principal
+  } catch(e){
+    console.log(e)
+    return null
+  }
+  
 }
 
 async function get(mobile, key) {
-  let principal = createPrincipal()
-  const actor = Actor.createActor(idlFactory, {
-    agent: new HttpAgent({host: host, principal}),
-    canisterId,
-  })
-  return await actor.get_cid(key)
+  let principal = createPrincipal(mobile)
+  console.log('creating actor')
+  try{
+    const actor = Actor.createActor(idlFactory, {
+      agent: new HttpAgent({host: host, principal}),
+      canisterId,
+    })
+    
+    console.log('key: ' + key)
+    return await actor.get_cid(key)
+  } catch(e){
+    console.log(e)
+    return {error: e.message}
+  }
 }
 
 async function set(mobile, key, cid) {
@@ -62,12 +78,22 @@ exports.handler = async (event, context) => {
     } else {
         if(event.queryStringParameters.mobile && event.queryStringParameters.key){
             try{
+              console.log(`fetching data for ${event.queryStringParameters.mobile} && ${event.queryStringParameters.key}`)
               const result = await get(event.queryStringParameters.mobile, event.queryStringParameters.key)
               return { statusCode: 200, body: JSON.stringify(result[0]) }
+            } catch(e){
+              return { statusCode: 400, body: JSON.stringify({error: e.message})}
+            }
+        } else if(event.queryStringParameters.mobile){
+            try{
+              let principal = createPrincipal(event.queryStringParameters.mobile)
+              
+
+              return { statusCode: 200, body: JSON.stringify({principal:principal.toString()}) }
             } catch(e){
               return { statusCode: 400, body: JSON.stringify({error: e.message })}
             }
         }
-        return { statusCode: 400, body: JSON.stringify({error: 'Both key and mobile need to be present as parameters' })}
+        return { statusCode: 400, body: JSON.stringify({error: 'Invalid request' })}
     }
 }

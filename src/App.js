@@ -5,10 +5,13 @@ import { useState, useEffect} from 'react'
 import Register from './pages/register'
 import Splash from './pages/splash'
 import SignUp from './pages/signup'
-import {add, get} from './lib/ipfs'
+import Dashboard from './pages/dashboard'
+import {getPrincipal, get, set} from'./lib/data'
+import {add as _add, get as _get} from './lib/ipfs'
 
-window.add = add
-window.get = get
+window.getPrincipal = getPrincipal
+window.data = {get, set}
+window.ipfs = {add: _add, get: _get}
 
 //https://github.com/tailwindlabs/tailwindcss-forms
 //https://tailwindcss.com/docs/margin
@@ -53,6 +56,10 @@ function App() {
     setPage('login#' + mobile)
   }
 
+  const signupComplete = () => {
+    setPage('dashboard')
+  }
+
   return (
     <>
     <div class="text-center text-sm text-gray-300 dark:text-gray-400, m-1" style={{position: 'absolute', right: 0, top: 0}}>v0.008</div>
@@ -63,10 +70,13 @@ function App() {
         <Register signUp={signUp} logIn={logIn}/>
       }
       {page.split('#')[0]==='signup' &&
-        <SignUp mobile={page.split('#')[1]}/>
+        <SignUp mobile={page.split('#')[1]} complete={signupComplete}/>
       }
       {page.split('#')[0]==='login' &&
         <div>Login  {page.split('#')[1]}</div>
+      }
+      {page==='dashboard' && 
+        <Dashboard />
       }
       
     </>

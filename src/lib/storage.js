@@ -136,6 +136,10 @@ export const LocalStore = {
         return store
     },
 
+    addData: (key, data) => {
+        localStorage.setItem(key, JSON.stringify(data))
+    }
+
     
 }
 

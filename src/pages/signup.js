@@ -3,29 +3,43 @@ import Avatar from '../components/avatar'
 import JobSelect from '../components/job_select'
 import Button from '../components/button'
 import { ArrowRightIcon } from '../icons/icons'
-import {add} from '../lib/ipfs'
+//import {add} from '../lib/ipfs'
+//import {getPrincipal} from '../lib/user'
+import FarmInfo from '../components/farm_info'
+import {addStaff} from '../lib/farm_info'
+import {LocalStore} from '../lib/storage'
 
 const Status = {profile: 0, farm_farmer: 1, farm_other: 2}
 
 const SignUp = props => {
     const [image, setImage] = useState(null)
     const [name, setName] = useState('')
-    const [job, setJob] = useState('Farmer')
+    const [role, setRole] = useState('Farmer')
     const [status, setStatus] = useState(Status.profile)
+    
 
     const imageSelect = (img) => {
         setImage(img)
     }
 
     const next = async () => {
-        console.log(image)
-        let x = await add(image)
-        console.log(x)
-        if(job==='Farmer'){
+        //let x = await add(image)
+        if(role==='Farmer'){
+            console.log('setting farmer')
             setStatus(Status.farm_farmer)
         } else {
             setStatus(Status.farm_other)
         }
+    }
+
+    const setFarm = async (farm) => {
+        let user = {name, mobile: props.mobile, image}
+        let farmStaff = await addStaff(props.mobile,farm,user,role)
+        let farmInfo = {name: farm, staff: farmStaff}
+        LocalStore.addData('farmData',farmInfo)
+        user.role = role
+        LocalStore.addData('me',user)
+        props.complete()
     }
 
     return (
@@ -40,10 +54,19 @@ const SignUp = props => {
                     <input type="text" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="John Doe" onChange={e=>setName(e.target.value)}/>
                 </div>
                 
-                <div class="px-5 mb-3"><JobSelect onSelect={j=>setJob(j)}/></div>
-                <div class="text-center mt-5"><Button onClick={next} disabled={(job==='' || name==='')}><div class="inline align-middle">Next</div> <ArrowRightIcon/></Button></div>
+                <div class="px-5 mb-3"><JobSelect onSelect={j=>setRole(j)}/></div>
+                <div class="text-center mt-5"><Button onClick={next} disabled={(role==='' || name==='')}><div class="inline align-middle">Next</div> <ArrowRightIcon/></Button></div>
             </>
         }  
+
+        {status===Status.farm_farmer && 
+            <>
+                <FarmInfo mobile={props.mobile} AddFarm={true} setFarm={setFarm}/>
+            </>
+        }
+        {status===Status.farm_other && 
+            <></>
+        }
          
         </>
     )
