@@ -3,10 +3,13 @@ import Avatar from '../components/avatar'
 import JobSelect from '../components/job_select'
 import Button from '../components/button'
 import { ArrowRightIcon } from '../icons/icons'
-//import {add} from '../lib/ipfs'
+import {add} from '../lib/ipfs'
+import {getID} from '../lib/id'
+import {updateWorker} from '../lib/farminfo'
 //import {getPrincipal} from '../lib/user'
 import FarmInfo from '../components/farm_info'
-import {addStaff} from '../lib/farm_info'
+//import {addStaff} from '../lib/farm_info'
+
 import {LocalStore} from '../lib/storage'
 
 const Status = {profile: 0, farm_farmer: 1, farm_other: 2}
@@ -32,12 +35,22 @@ const SignUp = props => {
         }
     }
 
-    const setFarm = async (farm) => {
+    const farmComplete = async (farm) => {
+        console.log(farm)
+        console.log('uploading image')
+        let cid = 'null'
+        if(image){
+            cid = await add(image)
+            console.log(cid)
+        }
+        console.log('get ID')
+        let id = await getID(props.mobile)
+        id = id.id
+        console.log(id)
+        console.log('creating user')
+        console.log(role)
+        await updateWorker(props.mobile, farm,name,id,role,cid)
         let user = {name, mobile: props.mobile, image}
-        let farmStaff = await addStaff(props.mobile,farm,user,role)
-        let farmInfo = {name: farm, staff: farmStaff}
-        LocalStore.addData('farmData',farmInfo)
-        user.role = role
         LocalStore.addData('me',user)
         props.complete()
     }
@@ -61,7 +74,7 @@ const SignUp = props => {
 
         {status===Status.farm_farmer && 
             <>
-                <FarmInfo mobile={props.mobile} AddFarm={true} setFarm={setFarm}/>
+                <FarmInfo mobile={props.mobile} AddFarm={true} complete={farmComplete}/>
             </>
         }
         {status===Status.farm_other && 

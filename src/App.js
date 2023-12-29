@@ -8,10 +8,21 @@ import SignUp from './pages/signup'
 import Dashboard from './pages/dashboard'
 import {getPrincipal, get, set} from'./lib/data'
 import {add as _add, get as _get} from './lib/ipfs'
+import {getID} from './lib/id'
+import {addFarm, getFarm, getFarms, updateWorker, getWorkers, getWorker, id} from './lib/farminfo'
 
 window.getPrincipal = getPrincipal
 window.data = {get, set}
 window.ipfs = {add: _add, get: _get}
+window.getID = getID
+window.addFarm = addFarm
+window.getFarm = getFarm
+window.getFarms = getFarms
+window.id = id
+window.updateWorker = updateWorker
+window.getWorkers = getWorkers
+window.getWorker = getWorker
+
 
 //https://github.com/tailwindlabs/tailwindcss-forms
 //https://tailwindcss.com/docs/margin

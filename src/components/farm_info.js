@@ -1,7 +1,8 @@
-import React, {useState, useEffect} from 'react'
-import {getAll, set} from '../lib/farm_info'
+import React, {useState} from 'react'
+//import {getAll, set} from '../lib/farm_info'
+import {addFarm} from '../lib/farminfo'
 import Button from '../components/button'
-import { ArrowRightIcon } from '../icons/icons'
+//import { ArrowRightIcon } from '../icons/icons'
 
 const FarmInfo = (props) => {
     const [loading, setLoading] = useState(false)
@@ -25,10 +26,11 @@ const FarmInfo = (props) => {
     const setFarmName = async() => {
         setLoading(true)
         try{
-            await set(props.mobile,farm)
-            await props.setFarm(props.mobile)
+            await addFarm(props.mobile,farm,'_test_no_geohash_')
+            await props.complete(farm)
             setLoading(false)
         } catch(e){
+            //TODO: catch for farm already exists etc.
             console.log(e)
         }
         

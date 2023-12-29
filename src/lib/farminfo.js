@@ -1,0 +1,65 @@
+import axios from 'axios'
+const endpoint = "/.netlify/functions"
+
+export const addFarm = async (mobile, farmName, geohash) => {
+    try{
+        const ret = await axios.post(`${endpoint}/farm_info_canister`,{method: 'add_farm',mobile,farmName, geohash})
+        return ret.data
+    } catch(e){
+        return e.message
+    }
+}
+
+export const getFarm = async (mobile, farmName) => {
+    try{
+        const ret = await axios.get(`${endpoint}/farm_info_canister?method=get_farm&mobile=${mobile}&farmName=${farmName}`)
+        return ret.data[0]
+    } catch(e){
+        return e.message
+    }
+}
+
+export const getFarms = async (mobile) => {
+    try{
+        const ret = await axios.get(`${endpoint}/farm_info_canister?method=get_farms&mobile=${mobile}`)
+        return ret.data
+    } catch(e){
+        return e.message
+    }
+}
+
+export const updateWorker = async (mobile, farmName, name, id, role, image_cid) => {
+    try{
+        const ret = await axios.post(`${endpoint}/farm_info_canister`,{method: 'update_worker', mobile, farmName, name, id, role,image_cid})
+        return ret.data
+    } catch(e){
+        return e.message
+    }
+}
+
+export const getWorkers = async (mobile, farmName) => {
+    try{
+        const ret = await axios.get(`${endpoint}/farm_info_canister?method=get_workers&mobile=${mobile}&farmName=${farmName}`)
+        return ret.data
+    } catch(e){
+        return e.message
+    }
+}
+
+export const getWorker = async (mobile, farmName, id) => {
+    try{
+        const ret = await axios.get(`${endpoint}/farm_info_canister?method=get_worker&mobile=${mobile}&farmName=${farmName}&id=${id}`)
+        return ret.data[0]
+    } catch(e){
+        return e.message
+    }
+}
+
+export const id = async (mobile) => {
+    try{
+        const ret = await axios.get(`${endpoint}/farm_info_canister?method=id&mobile=${mobile}`)
+        return ret.data
+    } catch(e){
+        return e.message
+    }
+}

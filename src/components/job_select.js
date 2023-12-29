@@ -2,7 +2,7 @@ import React from 'react'
 
 const JobSelect = props => {
     const jobs = [
-        'Farmer','Farm Manager','Field Manager','Factory Manager','Receiving Manager','Harvester'
+        'Farmer','Farm Manager','Field Manager','Factory Manager','Receiving Manager','Harvester','Scout'
     ]
     const liAr = jobs.map((j,i)=>(
         <option value={j} key={i}>{j}</option>
