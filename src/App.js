@@ -1,12 +1,13 @@
 import React from 'react';
 import { useState, useEffect} from 'react'
 //import InField from './pages/infield_collection'
-//import PeopleManagement from './pages/people_management.js'
+import PeopleManagement from './pages/people_management.js'
 import Register from './pages/register'
 import Splash from './pages/splash'
 import SignUp from './pages/signup'
 import Dashboard from './pages/dashboard'
 import {getPrincipal, get, set} from'./lib/data'
+import { LocalStore } from './lib/storage'
 import {add as _add, get as _get} from './lib/ipfs'
 import {getID} from './lib/id'
 import {addFarm, getFarm, getFarms, updateWorker, getWorkers, getWorker, id} from './lib/farminfo'
@@ -48,13 +49,20 @@ const AppStatus = {startup: 0, initializing: 1, initialized: 2}
 function App() {
   const [status, setStatus] = useState(AppStatus.startup)
   const [page, setPage] = useState('splash')
+  const [user, setUser] = useState(null)
 
   useEffect(()=>{
     if(status===AppStatus.startup){
       setStatus(AppStatus.initializing)
-      //check if user exists
-      //if not:
-      setTimeout(()=>setPage('register'),1000)
+      let me = LocalStore.getData('me')
+      if(me){
+        setUser(me)
+        console.log(me)
+        setPage('dashboard')
+      } else {
+        setTimeout(()=>setPage('register'),1000)
+      }
+      
       
     }
   },[status])
@@ -87,7 +95,10 @@ function App() {
         <div>Login  {page.split('#')[1]}</div>
       }
       {page==='dashboard' && 
-        <Dashboard />
+        <Dashboard setPage={setPage}/>
+      }
+      {page==='people' && 
+        <PeopleManagement setPage={setPage} me={user}/>
       }
       
     </>

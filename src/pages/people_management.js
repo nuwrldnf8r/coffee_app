@@ -1,10 +1,18 @@
 import React from 'react';
 import { useState, useEffect} from 'react'
-import {PersonCircledIcon, AddPersonIcon} from '../icons/icons'
+import {UsersIcon, BackIcon, AddPersonIcon} from '../icons/icons'
 
 const PeopleManagement = (props) => {
     return (
-        <div class="text-center mt-3"><PersonCircledIcon /> <div class="inline align-middle">People</div></div>
+        <>
+        <div class="ml-2 mt-2">
+            <button onClick={() => props.setPage('dashboard')}>
+                <BackIcon />
+            </button>
+        </div>
+        <div class="text-center"><UsersIcon /> <div class="inline align-middle ml-2">Manage People</div></div>
+    
+        </>
     )
 }
 

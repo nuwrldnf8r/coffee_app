@@ -2,6 +2,7 @@ const IPFS = require('ipfs-infura');
 const axios = require('axios')
 
 const add = async (data) => {
+    if(!data) return 'null'
     const ipfs = new IPFS({
         host: 'ipfs.infura.io', 
         port: 5001, 

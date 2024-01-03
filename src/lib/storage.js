@@ -132,7 +132,7 @@ export const LocalStore = {
     getData: (key) => {
         let store = localStorage.getItem(key)
         if(store) store = JSON.parse(store)
-        store = store || {}
+        store = store || null
         return store
     },
 
