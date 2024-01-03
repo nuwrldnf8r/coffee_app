@@ -10,8 +10,8 @@ const {Secp256k1KeyIdentity} = require('@dfinity/identity-secp256k1')
 
 const idlFactory = ({ IDL }) => {
   const Farm = IDL.Record({
+    'metadata' : IDL.Text,
     'name' : IDL.Text,
-    'geohash' : IDL.Text,
     'farmer' : IDL.Text,
   });
   const Role = IDL.Variant({
@@ -32,10 +32,18 @@ const idlFactory = ({ IDL }) => {
   });
   return IDL.Service({
     'add_farm' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'delete_farm' : IDL.Func([IDL.Text], [], []),
+    'delete_worker' : IDL.Func([IDL.Text], [], []),
     'get_farm' : IDL.Func([IDL.Text], [IDL.Opt(Farm)], ['query']),
+    'get_farm_from_workerid' : IDL.Func([IDL.Text], [IDL.Opt(Farm)], ['query']),
     'get_farms' : IDL.Func([], [IDL.Vec(Farm)], ['query']),
     'get_worker' : IDL.Func([IDL.Text, IDL.Text], [IDL.Opt(Person)], ['query']),
     'get_workers' : IDL.Func([IDL.Text], [IDL.Vec(Person)], ['query']),
+    'get_workers_from_workerid' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(Person)],
+        ['query'],
+      ),
     'id' : IDL.Func([], [IDL.Text], ['query']),
     'update_worker' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, Role, IDL.Text],
@@ -103,11 +111,11 @@ const createActor = async (mobile) => {
   }
 }
 
-const addFarm = async (mobile, farmName, geohash) => {
+const addFarm = async (mobile, farmName, metadata) => {
     try{
       const actor = await createActor(mobile)
       console.log('adding farm')
-      await actor.add_farm(farmName, geohash)
+      await actor.add_farm(farmName, metadata)
       return {success:true}
     } catch(e){
       console.log(e)
@@ -179,6 +187,32 @@ const updateWorker = async (mobile, farmName, name, id, role, image_cid) => {
   }
 }
 
+const deleteWorker = async (mobile, id) => {
+  try{
+    const actor = await createActor(mobile)
+    
+    await actor.delete_worker(id)
+    return {success: true}
+
+  } catch(e){
+    console.log(e)
+    return {error: e.message}
+  }
+}
+
+const deleteFarm = async (mobile, farm) => {
+  try{
+    const actor = await createActor(mobile)
+    
+    await actor.delete_farm(farm)
+    return {success: true}
+
+  } catch(e){
+    console.log(e)
+    return {error: e.message}
+  }
+}
+
 const id = async (mobile) => {
   try{
     const actor = await createActor(mobile)
@@ -196,11 +230,17 @@ exports.handler = async (event, context) => {
       try{
           const body = JSON.parse(event.body) 
           let ret = {error: 'Invalid parameters'}
-          if(body.method && body.method==='add_farm' && body.mobile && body.farmName && body.geohash){
-            ret = await addFarm(body.mobile, body.farmName, body.geohash)
+          if(body.method && body.method==='add_farm' && body.mobile && body.farmName && body.metadata){
+            ret = await addFarm(body.mobile, body.farmName, body.metadata)
           }
           if(body.method && body.method==='update_worker' && body.mobile && body.farmName && body.name && body.id && body.role && body.image_cid){
             ret = await updateWorker(body.mobile,body.farmName,body.name,body.id,body.role,body.image_cid)
+          }
+          if(body.method && body.method==='delete_worker' && body.mobile && body.id){
+            ret = await deleteWorker(body.mobile,body.id)
+          }
+          if(body.method && body.method==='delete_farm' && body.mobile && body.farm){
+            ret = await deleteFarm(body.mobile,body.farm)
           }
           if(!ret.error) return { statusCode: 200, body: JSON.stringify({success: true}) }
           return { statusCode: 400, body: JSON.stringify(ret)}

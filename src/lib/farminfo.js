@@ -1,9 +1,9 @@
 import axios from 'axios'
 const endpoint = "/.netlify/functions"
 
-export const addFarm = async (mobile, farmName, geohash) => {
+export const addFarm = async (mobile, farmName, metadata) => {
     try{
-        const ret = await axios.post(`${endpoint}/farm_info_canister`,{method: 'add_farm',mobile,farmName, geohash})
+        const ret = await axios.post(`${endpoint}/farm_info_canister`,{method: 'add_farm',mobile,farmName, metadata: metadata})
         return ret.data
     } catch(e){
         return e.message
