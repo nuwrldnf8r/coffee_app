@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import {PersonCircledIcon, UsersIcon, BucketIcon, TractorIcon, Shed, DashboardIcon} from '../icons/icons' 
-import {}
+
 const Dashboard = props => {
     const [peopleLoading, setPeopleloading] = useState(false)
     const [people, setPeople] = useState(null)

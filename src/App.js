@@ -10,7 +10,7 @@ import {getPrincipal, get, set} from'./lib/data'
 import { LocalStore } from './lib/storage'
 import {add as _add, get as _get} from './lib/ipfs'
 import {getID} from './lib/id'
-import {addFarm, getFarm, getFarms, updateWorker, getWorkers, getWorker, id} from './lib/farminfo'
+import {addFarm, getFarm, getFarms, updateWorker, getWorkers, getWorker, id, getFarmFromWorkerId} from './lib/farminfo'
 
 window.getPrincipal = getPrincipal
 window.data = {get, set}
@@ -50,6 +50,7 @@ function App() {
   const [status, setStatus] = useState(AppStatus.startup)
   const [page, setPage] = useState('splash')
   const [user, setUser] = useState(null)
+  const [loggingIn, setLoggingIn] = useState(false)
 
   useEffect(()=>{
     if(status===AppStatus.startup){
@@ -71,8 +72,13 @@ function App() {
     setPage('signup#' + mobile)
   }
 
-  const logIn = (mobile) => {
-    setPage('login#' + mobile)
+  const logIn = async (mobile) => {
+    if(loggingIn) return
+    setLoggingIn(true)
+    let _id = await id(mobile)
+    let farm = await getFarmFromWorkerId(mobile, id)
+    if(!farm) signUp()
+    //setPage('login#' + mobile)
   }
 
   const signupComplete = () => {
@@ -86,7 +92,7 @@ function App() {
         <Splash/>
       }
       {page==='register' && 
-        <Register signUp={signUp} logIn={logIn}/>
+        <Register signUp={signUp} logIn={logIn} loggingIn={loggingIn}/>
       }
       {page.split('#')[0]==='signup' &&
         <SignUp mobile={page.split('#')[1]} complete={signupComplete}/>
