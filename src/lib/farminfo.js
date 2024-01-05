@@ -55,6 +55,42 @@ export const getWorker = async (mobile, farmName, id) => {
     }
 }
 
+export const deleteWorker = async (mobile, id) => {
+    try{
+        const ret = await axios.post(`${endpoint}/farm_info_canister`, {method: 'delete_worker', mobile, id})
+        return ret.data
+    } catch(e){
+        return e.message
+    }
+}
+
+export const deleteFarm = async (mobile, farm) => {
+    try{
+        const ret = await axios.post(`${endpoint}/farm_info_canister`, {method: 'delete_farm', mobile, farm})
+        return ret.data
+    } catch(e){
+        return e.message
+    }
+}
+
+export const getFarmFromWorkerId = async (mobile, id) => {
+    try{
+        const ret = await axios.get(`${endpoint}/farm_info_canister?method=get_farm_from_workerid&mobile=${mobile}&id=${id}`)
+        return ret.data[0]
+    } catch(e){
+        return e.message
+    }
+}
+
+export const getWorkersFromWorkerId = async (mobile, id) => {
+    try{
+        const ret = await axios.get(`${endpoint}/farm_info_canister?method=get_workers_from_workerid&mobile=${mobile}&id=${id}`)
+        return ret.data
+    } catch(e){
+        return e.message
+    }
+}
+
 export const id = async (mobile) => {
     try{
         const ret = await axios.get(`${endpoint}/farm_info_canister?method=id&mobile=${mobile}`)

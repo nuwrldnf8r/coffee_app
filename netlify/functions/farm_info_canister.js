@@ -213,6 +213,27 @@ const deleteFarm = async (mobile, farm) => {
   }
 }
 
+const getFarmFromWorkerId = async (mobile, id) => {
+  try{
+    const actor = await createActor(mobile)
+    return await actor.get_farm_from_workerid(id)
+  } catch(e){
+    console.log(e)
+    return {error: e.message}
+  }
+}
+
+const getWorkersFromWorkerId = async (mobile, id) => {
+  try{
+    const actor = await createActor(mobile)
+    return await actor.get_workers_from_workerid(id)
+  } catch(e){
+    console.log(e)
+    return {error: e.message}
+  }
+}
+
+
 const id = async (mobile) => {
   try{
     const actor = await createActor(mobile)
@@ -265,6 +286,12 @@ exports.handler = async (event, context) => {
         }   
         if(params.method && params.method==='id' && params.mobile){
           ret = await id(params.mobile)
+        }
+        if(params.method && params.method==='get_farm_from_workerid' && params.mobile && params.id){
+          ret = await getFarmFromWorkerId(params.mobile, params.id)
+        }
+        if(params.method && params.method==='get_workers_from_workerid' && params.mobile && params.id){
+          ret = await getWorkersFromWorkerId(params.mobile, params.id)
         }
         if(!ret.error) return { statusCode: 200, body: JSON.stringify(ret) }
         return { statusCode: 400, body: JSON.stringify(ret)}
