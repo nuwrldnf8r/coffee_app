@@ -10,13 +10,23 @@ const AddPerson = (props) => {
     const [name, setName] = useState('')
     const [role, setRole] = useState(null)
     const [saving, setSaving] = useState(false)
+    const [mobile, setMobile] = useState('')
 
     const imageSelect = (img) => {
         setImage(img)
     }
 
+    const validateMobile = () => {
+        return ((mobile.substring(0,1)==='0' && mobile.length===10) || (mobile.substring(0,1)!=='0' && mobile.length===9) || (mobile.substring(0,2)!=='27' && mobile.length===11))
+    }
+
     const save = async () => {
         setSaving(true)
+        //get id
+        //upload image
+        //update worker
+        //setSaving(false)
+        //props.personAdded(person)
     }
 
     return (
@@ -26,18 +36,28 @@ const AddPerson = (props) => {
                 <BackIcon />
             </button>
         </div>
-        <div class="text-center"><AddPersonIcon /> <div class="inline align-middle ml-2">Add Person</div></div>
-        <div class='container w-20 h-20 mx-auto mt-10'><Avatar size={'md'} image={image} edit onImageSelect={imageSelect}/></div>
+        <div class='container w-20 h-20 mx-auto mt-3'><Avatar size={'md'} image={image} edit onImageSelect={imageSelect}/></div>
         <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400 text-center">Click to upload an Avatar</p>
-            
-        <div class="p-5">
-            <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Person's Name</label>
+        <div class="pl-5 pr-5 mt-3">
+            <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Person's Name:</label>
             <input type="text" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="John Doe" onChange={e=>setName(e.target.value)}/>
         </div>
+        <div class="pl-5 pr-5 mt-2">
+            <label for="phone-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Mobile number:</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 start-0 top-0 flex items-center ps-3.5 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 19 18">
+                        <path d="M18 13.446a3.02 3.02 0 0 0-.946-1.985l-1.4-1.4a3.054 3.054 0 0 0-4.218 0l-.7.7a.983.983 0 0 1-1.39 0l-2.1-2.1a.983.983 0 0 1 0-1.389l.7-.7a2.98 2.98 0 0 0 0-4.217l-1.4-1.4a2.824 2.824 0 0 0-4.218 0c-3.619 3.619-3 8.229 1.752 12.979C6.785 16.639 9.45 18 11.912 18a7.175 7.175 0 0 0 5.139-2.325A2.9 2.9 0 0 0 18 13.446Z"/>
+                    </svg>
+                </div>
+                <input type="number" id="phone-input" aria-describedby="helper-text-explanation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="Mobile Number" value={mobile} onChange={e=>setMobile(e.target.value)}/>
+            </div>
+        </div>
+       
             
-        <div class="px-5 mb-3"><JobSelect onSelect={j=>setRole(j)} exception={['Farmer']}/></div>
+        <div class="px-5 mb-3 mt-2"><JobSelect onSelect={j=>setRole(j)} exception={['Farmer']}/></div>
         {!saving && 
-            <div class="text-center mt-5"><Button onClick={save} disabled={(role==='' || name==='')}><div class="inline align-middle">Save</div></Button></div>
+            <div class="text-center mt-5"><Button onClick={save} disabled={(role==='' || name==='' || !validateMobile())}><div class="inline align-middle">Save</div></Button></div>
         }
         {saving && 
             <div class='text-center mt-5'>
