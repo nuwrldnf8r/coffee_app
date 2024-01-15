@@ -50,7 +50,7 @@ const SignUp = props => {
         console.log('creating user')
         console.log(role)
         await updateWorker(props.mobile, farm,name,id,role,cid)
-        let user = {name, mobile: props.mobile, image}
+        let user = {id, name, mobile: props.mobile, farm, role, image: cid}
         LocalStore.addData('me',user)
         props.complete()
     }

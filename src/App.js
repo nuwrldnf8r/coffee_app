@@ -2,10 +2,14 @@ import React from 'react';
 import { useState, useEffect} from 'react'
 //import InField from './pages/infield_collection'
 import PeopleManagement from './pages/people_management.js'
+import MyInfo from './pages/my-info.js';
 import Register from './pages/register'
 import Splash from './pages/splash'
 import SignUp from './pages/signup'
 import Dashboard from './pages/dashboard'
+import InField from './pages/infield_collection'
+import CollectionPoint from './pages/collection_point'
+import WashingStation from './pages/washing_station'
 import {getPrincipal, get, set} from'./lib/data'
 import { LocalStore } from './lib/storage'
 import {add as _add, get as _get} from './lib/ipfs'
@@ -76,9 +80,26 @@ function App() {
     if(loggingIn) return
     setLoggingIn(true)
     let _id = await id(mobile)
-    let farm = await getFarmFromWorkerId(mobile, id)
-    if(!farm) signUp()
-    //setPage('login#' + mobile)
+    console.log(_id)
+    console.log('getting farm')
+    let farm = await getFarmFromWorkerId(mobile, _id)
+    console.log(farm)
+    if(!farm){
+      signUp()
+    } else {
+      console.log('getting user')
+      let user = await getWorker(mobile, farm.name, _id)
+      if(!user){
+        console.log('error - no user')
+        return
+      }
+      //let user = {id: _id, name, mobile: props.mobile, farm, role, image: cid}
+      user.farm = farm.name
+      LocalStore.addData('me',user)
+      setUser(user)
+      setPage('dashboard')
+      //setPage('login#' + mobile)
+    }
   }
 
   const signupComplete = () => {
@@ -87,7 +108,7 @@ function App() {
 
   return (
     <>
-    <div class="text-center text-sm text-gray-300 dark:text-gray-400, m-1" style={{position: 'absolute', right: 0, top: 0}}>v0.008</div>
+    <div class="text-center text-sm text-gray-300 dark:text-gray-400, m-1" style={{position: 'absolute', right: 0, top: 0}}>v0.009</div>
       {page==='splash' && 
         <Splash/>
       }
@@ -101,10 +122,22 @@ function App() {
         <div>Login  {page.split('#')[1]}</div>
       }
       {page==='dashboard' && 
-        <Dashboard setPage={setPage}/>
+        <Dashboard setPage={setPage} me={user}/>
+      }
+      {page==='my_info' && 
+        <MyInfo setPage={setPage} me={user}/>
       }
       {page==='people' && 
         <PeopleManagement setPage={setPage} me={user}/>
+      }
+      {page==='infield_collection' && 
+        <InField setPage={setPage} me={user} />
+      }
+      {page==='collection_point' && 
+        <CollectionPoint  setPage={setPage} me={user}/>
+      }
+      {page==='washing_station' && 
+        <WashingStation setPage={setPage} me={user}/>
       }
       
     </>

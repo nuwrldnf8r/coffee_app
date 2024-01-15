@@ -1,8 +1,8 @@
 import React from 'react';
 import { useState, useEffect} from 'react'
-import {Shed, BackIcon} from '../icons/icons'
+import {PersonCircledIcon, BackIcon, AddPersonIcon} from '../icons/icons'
 
-const WashingStation = (props) => {
+const MyInfo = (props) => {
     return (
         <>
         <div class="ml-2 mt-2">
@@ -10,10 +10,10 @@ const WashingStation = (props) => {
                 <BackIcon />
             </button>
         </div>
-        <div class="text-center"><Shed /> <div class="inline align-middle ml-2">Washing Station</div></div>
+        <div class="text-center"><PersonCircledIcon /> <div class="inline align-middle ml-2">My Info</div></div>
     
         </>
     )
 }
 
-export default WashingStation
+export default MyInfo

@@ -3,7 +3,7 @@ import { useState, useEffect} from 'react'
 import CameraComponent  from '../components/camera'
 import Weight from '../components/weight'
 import Summary from '../components/infield_summary'
-import {ArrowRightIcon, CameraIcon, QRIcon, BucketIcon} from '../icons/icons'
+import {ArrowRightIcon, CameraIcon, QRIcon, BucketIcon, BackIcon} from '../icons/icons'
 import {LocalStore} from '../lib/storage'
 import {QR} from '../components/qr'
 
@@ -75,11 +75,16 @@ const InField = (props) => {
 
       return (
         <>  
-            <div class="text-center text-base m-2 font-medium">In-Field Collection</div>
+           <div class="ml-2 mt-2">
+              <button onClick={() => props.setPage('dashboard')}>
+                  <BackIcon />
+              </button>
+          </div>
+          <div class="text-center"><BucketIcon /> <div class="inline align-middle ml-2">In-Field Collection</div></div>
             {status===0 && 
                 <>
                   
-                  <div class="mx-auto text-center">Harvester Info goes here</div>
+                  <div class="mx-auto text-center mt-5">Harvester Info goes here</div>
                   <div class="mx-auto text-center font-medium mt-2"><button onClick={()=>setStatus(1)}>Next <ArrowRightIcon/></button></div>
                 </>
             }
