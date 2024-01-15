@@ -3,12 +3,15 @@ import {useState} from 'react'
 import Avatar from './avatar'
 import JobSelect from './job_select'
 import Button from './button'
-import { AddPersonIcon, BackIcon } from '../icons/icons' 
+import { BackIcon } from '../icons/icons' 
+import { getID } from '../lib/id'
+import {add} from '../lib/ipfs'
+import {updateWorker, getWorker} from '../lib/farminfo'
 
 const AddPerson = (props) => {
     const [image, setImage] = useState(null)
     const [name, setName] = useState('')
-    const [role, setRole] = useState(null)
+    const [role, setRole] = useState('FarmManager')
     const [saving, setSaving] = useState(false)
     const [mobile, setMobile] = useState('')
 
@@ -21,12 +24,40 @@ const AddPerson = (props) => {
     }
 
     const save = async () => {
+        
         setSaving(true)
-        //get id
-        //upload image
-        //update worker
-        //setSaving(false)
-        //props.personAdded(person)
+        console.log('fetching id')
+        let id = await getID(mobile)
+        id = id.id
+        let cid = ''
+        if(image){
+            console.log('uploading image')
+            cid = await add(image)
+        }
+        console.log('calling update worker')
+        console.log("Me mobile:", props.me.mobile)
+        console.log("Farm:", props.me.farm)
+        console.log("Name:", name)
+        console.log("Id:", id)
+        console.log("Role:", role.split(' ').join(''))
+        console.log("CID:",cid)
+        
+        let res = await updateWorker(props.me.mobile,props.me.farm,name,id,role.split(' ').join(''),cid)
+        
+        if(res && res.success){
+            //update worker
+            console.log('fetching person')
+            let person = await getWorker(props.me.mobile, props.me.farm, id)
+            console.log(person)
+            props.personAdded(person)
+            setSaving(false)
+        } else {
+            console.log(res)
+            setSaving(false)
+        }
+        
+        
+
     }
 
     return (

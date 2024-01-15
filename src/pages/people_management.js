@@ -36,7 +36,6 @@ const Person = (props) => {
 const PeopleManagement = (props) => {
     const [status, setStatus] = useState(0)
     const people = props.people.map(p=><Person key={p.id} {...p} />)
-
     const addPerson = async () => {
         setStatus(1)
     }
@@ -73,7 +72,7 @@ const PeopleManagement = (props) => {
             </>
         }
         {status===1 && 
-            <AddPerson farm={props.farm} personAdded={personAdded} back={()=>setStatus(0)}/>
+            <AddPerson personAdded={personAdded} back={()=>setStatus(0)} me={props.me}/>
         }
         </>
     )

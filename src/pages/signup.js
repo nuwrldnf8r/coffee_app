@@ -5,7 +5,7 @@ import Button from '../components/button'
 import { ArrowRightIcon } from '../icons/icons'
 import {add} from '../lib/ipfs'
 import {getID} from '../lib/id'
-import {updateWorker} from '../lib/farminfo'
+import {updateWorker, getWorker} from '../lib/farminfo'
 //import {getPrincipal} from '../lib/user'
 import FarmInfo from '../components/farm_info'
 //import {addStaff} from '../lib/farm_info'
@@ -48,9 +48,9 @@ const SignUp = props => {
         id = id.id
         console.log(id)
         console.log('creating user')
-        console.log(role)
-        await updateWorker(props.mobile, farm,name,id,role,cid)
-        let user = {id, name, mobile: props.mobile, farm, role, image: cid}
+        await updateWorker(props.mobile, farm,name,id,role.split(' ').join(''),cid)
+        let user = await getWorker(props.mobile,farm,id)
+        user.mobile = props.mobile //{id, name, mobile: props.mobile, farm, role, image: cid}
         LocalStore.addData('me',user)
         props.complete()
     }

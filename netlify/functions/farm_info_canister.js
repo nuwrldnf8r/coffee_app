@@ -165,8 +165,9 @@ const getWorkers = async (mobile, farmName) => {
 
 const updateWorker = async (mobile, farmName, name, id, role, image_cid) => {
   try{
+    console.log('updating worker')
     const actor = await createActor(mobile)
-    
+    console.log('actor created')
     let roles = {
       'Scout' : {Scout: null},
       'Farmer' : {Farmer: null},
@@ -176,7 +177,10 @@ const updateWorker = async (mobile, farmName, name, id, role, image_cid) => {
       'FactoryManager' : {FactoryManager: null},
       'FieldManager' : {FieldManager: null}
     }
+    console.log('***************************')
+    console.log(role)
     console.log(roles[role])
+    console.log('***************************')
     
     await actor.update_worker(farmName, name, id, roles[role], image_cid)
     return {success: true}
@@ -250,11 +254,14 @@ exports.handler = async (event, context) => {
   if(event.httpMethod==='POST'){
       try{
           const body = JSON.parse(event.body) 
+          console.log(body)
+          console.log('cid: ', (body.image_cid))
           let ret = {error: 'Invalid parameters'}
           if(body.method && body.method==='add_farm' && body.mobile && body.farmName && body.metadata){
             ret = await addFarm(body.mobile, body.farmName, body.metadata)
           }
-          if(body.method && body.method==='update_worker' && body.mobile && body.farmName && body.name && body.id && body.role && body.image_cid){
+          if(body.method && body.method==='update_worker' && body.mobile && body.farmName && body.name && body.id && body.role){
+            console.log('here')
             ret = await updateWorker(body.mobile,body.farmName,body.name,body.id,body.role,body.image_cid)
           }
           if(body.method && body.method==='delete_worker' && body.mobile && body.id){
@@ -266,6 +273,7 @@ exports.handler = async (event, context) => {
           if(!ret.error) return { statusCode: 200, body: JSON.stringify({success: true}) }
           return { statusCode: 400, body: JSON.stringify(ret)}
       } catch(e){
+          console.log('crap')
           return { statusCode: 400, body: JSON.stringify({error: e.message })}
       }
   } else {

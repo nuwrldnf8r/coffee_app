@@ -29,6 +29,7 @@ export const getFarms = async (mobile) => {
 }
 
 export const updateWorker = async (mobile, farmName, name, id, role, image_cid) => {
+    console.log('role::' + role)
     try{
         const ret = await axios.post(`${endpoint}/farm_info_canister`,{method: 'update_worker', mobile, farmName, name, id, role,image_cid})
         return ret.data

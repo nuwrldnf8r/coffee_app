@@ -98,6 +98,7 @@ function App() {
       }
       //let user = {id: _id, name, mobile: props.mobile, farm, role, image: cid}
       user.farm = farm.name
+      user.mobile = mobile
       LocalStore.addData('me',user)
       setUser(user)
       setPage('dashboard')
@@ -106,7 +107,7 @@ function App() {
   }
 
   const addPerson = async (person) => {
-    let _people = Object.assign({},people)
+    let _people = people.slice
     _people.push(person)
     setPeople(_people)
     LocalStore.addData('people',_people)
