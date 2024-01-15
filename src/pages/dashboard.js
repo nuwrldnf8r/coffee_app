@@ -8,14 +8,15 @@ const Dashboard = props => {
     const [people, setPeople] = useState(null)
     const [farm, setFarm] = useState(null)
 
+
     useEffect(()=>{
         if(!people){
             getPeople().then()
         }
-    }, [people])
+    })
 
     const getPeople = async () => {
-        
+        //check if online
         if(peopleLoading) return
         setPeopleloading(true)
         if(!farm){
@@ -32,10 +33,18 @@ const Dashboard = props => {
             let workers = await getWorkers(props.me.mobile,props.me.farm)
             console.log(workers) 
             LocalStore.addData('people',workers)
+            workers = workers.map(w=>{
+                if(w.id===props.me.id) w.me=true
+                return w
+            })
+            setPeople(workers)
+            props.setPeople(workers)
         }
         setPeopleloading(false)
         
     }
+
+    
 
     return (
         <>

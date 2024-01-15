@@ -10,12 +10,13 @@ import Dashboard from './pages/dashboard'
 import InField from './pages/infield_collection'
 import CollectionPoint from './pages/collection_point'
 import WashingStation from './pages/washing_station'
-import {getPrincipal, get, set} from'./lib/data'
+//import {getPrincipal, get, set} from'./lib/data'
 import { LocalStore } from './lib/storage'
-import {add as _add, get as _get} from './lib/ipfs'
-import {getID} from './lib/id'
-import {addFarm, getFarm, getFarms, updateWorker, getWorkers, getWorker, id, getFarmFromWorkerId} from './lib/farminfo'
+//import {add as _add, get as _get} from './lib/ipfs'
+//import {getID} from './lib/id'
+import {getWorker, id, getFarmFromWorkerId} from './lib/farminfo'
 
+/*
 window.getPrincipal = getPrincipal
 window.data = {get, set}
 window.ipfs = {add: _add, get: _get}
@@ -27,6 +28,7 @@ window.id = id
 window.updateWorker = updateWorker
 window.getWorkers = getWorkers
 window.getWorker = getWorker
+*/
 
 
 //https://github.com/tailwindlabs/tailwindcss-forms
@@ -55,6 +57,7 @@ function App() {
   const [page, setPage] = useState('splash')
   const [user, setUser] = useState(null)
   const [loggingIn, setLoggingIn] = useState(false)
+  const [people, setPeople] = useState([])
 
   useEffect(()=>{
     if(status===AppStatus.startup){
@@ -102,6 +105,13 @@ function App() {
     }
   }
 
+  const addPerson = async (person) => {
+    let _people = Object.assign({},people)
+    _people.push(person)
+    setPeople(_people)
+    LocalStore.addData('people',_people)
+  }
+
   const signupComplete = () => {
     setPage('dashboard')
   }
@@ -122,13 +132,13 @@ function App() {
         <div>Login  {page.split('#')[1]}</div>
       }
       {page==='dashboard' && 
-        <Dashboard setPage={setPage} me={user}/>
+        <Dashboard setPage={setPage} me={user} setPeople={_people=>setPeople(_people)}/>
       }
       {page==='my_info' && 
         <MyInfo setPage={setPage} me={user}/>
       }
       {page==='people' && 
-        <PeopleManagement setPage={setPage} me={user}/>
+        <PeopleManagement setPage={setPage} me={user} people={people} addPerson={addPerson}/>
       }
       {page==='infield_collection' && 
         <InField setPage={setPage} me={user} />
