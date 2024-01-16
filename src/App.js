@@ -119,7 +119,7 @@ function App() {
 
   return (
     <>
-    <div class="text-center text-sm text-gray-300 dark:text-gray-400, m-1" style={{position: 'absolute', right: 0, top: 0}}>v0.009</div>
+    <div class="text-center text-sm text-gray-300 dark:text-gray-400, m-1" style={{position: 'absolute', right: 0, top: 0}}>v0.010</div>
       {page==='splash' && 
         <Splash/>
       }
