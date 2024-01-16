@@ -33,9 +33,10 @@ const Dashboard = props => {
             console.log('getting workers')
             let _people = LocalStore.getData('people')
             console.log('**************************')
-            console.log(_people)
-            setPeople(_people)
-            props.setPeople(_people)
+            if(_people){
+                setPeople(_people)
+                props.setPeople(_people)
+            }
             let workers = await getWorkers(props.me.mobile,props.me.farm)
             console.log(workers) 
             LocalStore.addData('people',workers)
