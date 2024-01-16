@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect} from 'react'
 import CameraComponent  from '../components/camera'
 import Weight from '../components/weight'
-import Summary from '../components/infield_summary'
+import InfieldSummary from '../components/infield_summary'
 import {ArrowRightIcon, CameraIcon, QRIcon, BucketIcon, BackIcon} from '../icons/icons'
 import {LocalStore} from '../lib/storage'
 import {QR} from '../components/qr'
@@ -35,7 +35,7 @@ const InField = (props) => {
         }
       })
 
-      let setWeightData = () => {
+      const setWeightData = () => {
         let _data = Object.assign({},data)
         _data.weight = weight
         setData(_data)
@@ -43,7 +43,7 @@ const InField = (props) => {
         setStatus(2)
       }
 
-      let setImageData = (imgData) => {
+      const setImageData = (imgData) => {
         console.log('here')
         if(data.image) return
         let _data = Object.assign({},data)
@@ -54,10 +54,8 @@ const InField = (props) => {
         setStatus(4)
       }
 
-      let qrResult = (result) => {
-        console.log('here')
-        if(data.QR) return true
-        console.log('Result:' + result)
+      const qrResult = (result) => {
+        if(data.bucketID) return true
         if(result.substr(0,4)!=='bkt:') return false
         result = parseInt(result.substring(4))
         console.log('result: ' + result)
@@ -75,8 +73,10 @@ const InField = (props) => {
       }
 
       const save = async () => {
+        /*
         let collected = LocalStore.addCollectedData(data)
         console.log(collected.id())
+        */
       }
 
       return (
@@ -120,7 +120,7 @@ const InField = (props) => {
                 </>
             }
             {status===4 && 
-                <Summary {...data} save={save}/>
+                <InfieldSummary {...data} save={save}/>
             }
             
         </>

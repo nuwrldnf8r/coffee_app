@@ -27,10 +27,10 @@ const trimAfterDot = (inputString) => {
     }
 }
 
-const InfieldSummary = (props) => {
+const CollectionSummary = (props) => {
     console.log(props)
     return (
-        <div class="grid grid-cols-1 mx-5 mt-2">
+        <div class="grid grid-cols-1 mx-5 mt-5">
             <div class="text-xs">GPS:
                 <div class="inline text-slate-500 text-center pl-5">  {props.coordinates.latitude} {props.coordinates.longitude}</div> 
                 <div class="text-xs  text-slate-500 text-center">(accuracy: {trimAfterDot(props.coordinates.accuracy.toString())})</div>
@@ -39,13 +39,11 @@ const InfieldSummary = (props) => {
             <div class="mb-2 text-xs text-slate-500 text-center">{formatTimestamp(props.ts)}</div>
             <div class="text-xs  mb-2">Recorded weight:
             <div class="inline text-slate-500 pl-5">{props.weight}</div></div>
-            <div class="text-xs">Bucket <div class="inline text-slate-500">(ID: {props.bucketID})</div>:</div>
-            <div class="text-center mx-auto"><img src={props.image} alt="Bucket" width='80%' class='mx-auto mt-1 rounded-md'/></div>
+            <div class="text-xs">Bucket ID: <div class="inline text-slate-500">{props.bucketID}</div></div>
+            <div class="text-xs">Tractor Bin ID: <div class="inline text-slate-500">{props.tractorBinID}</div></div>
             <div class="text-center mt-3 align-middle"><button onClick={props.save}><SaveIcon/> Save</button></div>
         </div>
     )
 }
 
-//
-
-export default InfieldSummary
+export default CollectionSummary

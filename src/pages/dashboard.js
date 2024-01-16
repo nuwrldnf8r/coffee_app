@@ -5,12 +5,13 @@ import { LocalStore } from '../lib/storage'
 
 const Dashboard = props => {
     const [peopleLoading, setPeopleloading] = useState(false)
-    const [people, setPeople] = useState(null)
+    const [people, setPeople] = useState([])
     const [farm, setFarm] = useState(null)
 
 
     useEffect(()=>{
-        if(!people){
+        if(people.length===0){
+            console.log('loading people')
             getPeople().then()
         }
     })
@@ -28,8 +29,13 @@ const Dashboard = props => {
                 return
             }
         }
-        if(!people){
+        if(people.length===0){
             console.log('getting workers')
+            let _people = LocalStore.getData('people')
+            console.log('**************************')
+            console.log(_people)
+            setPeople(_people)
+            props.setPeople(_people)
             let workers = await getWorkers(props.me.mobile,props.me.farm)
             console.log(workers) 
             LocalStore.addData('people',workers)
@@ -64,7 +70,7 @@ const Dashboard = props => {
                 </div>
                 <div></div>
             </div>
-            <div class="grid grid-cols-3 text-center max-w-sm px-5 mx-auto mt-12">
+            <div class="grid grid-cols-2 text-center max-w-sm px-10 mx-auto mt-12">
                 <div>
                     <button onClick={()=>props.setPage('infield_collection')} disabled={people.filter(p=>Object.keys(p.role)[0]==='Harvester').length===0}>
                     <BucketIcon disabled={people.filter(p=>Object.keys(p.role)[0]==='Harvester').length===0}/>
@@ -77,6 +83,9 @@ const Dashboard = props => {
                     <label class="block mb-2 mt-2 text-xs font-small text-gray-800 dark:text-white">Collection <br/>point</label>
                     </button>
                 </div>
+                
+            </div>
+            <div class="text-center  mt-12">
                 <div>
                     <button onClick={()=>props.setPage('washing_station')}>
                     <Shed />
