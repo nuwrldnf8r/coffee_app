@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import {PersonCircledIcon, UsersIcon, BucketIcon, TractorIcon, Shed, DashboardIcon} from '../icons/icons' 
 import {getWorkers} from '../lib/farminfo'
 import { LocalStore } from '../lib/storage'
+import Bean from '../images/bean.png'
 
 const Dashboard = props => {
     const [peopleLoading, setPeopleloading] = useState(false)
@@ -56,6 +57,7 @@ const Dashboard = props => {
 
     return (
         <>
+            <img src={Bean} class="w-8 h-8 absolute top-2 left-2" alt='bean' />
             <div class="text-center mt-3"><DashboardIcon /> <div class="inline align-middle ml-2">Dashboard</div></div>
             <div class="grid grid-cols-2 text-center max-w-sm px-10 mx-auto mt-20">
                 <div>

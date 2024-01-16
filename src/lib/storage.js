@@ -138,6 +138,10 @@ export const LocalStore = {
 
     addData: (key, data) => {
         localStorage.setItem(key, JSON.stringify(data))
+    },
+
+    deleteData: (key) => {
+        localStorage.removeItem(key)
     }
 
     

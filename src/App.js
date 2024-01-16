@@ -102,6 +102,7 @@ function App() {
       LocalStore.addData('me',user)
       setUser(user)
       setPage('dashboard')
+      setLoggingIn(false)
       //setPage('login#' + mobile)
     }
   }
@@ -117,9 +118,16 @@ function App() {
     setPage('dashboard')
   }
 
+  const signOut = () => {
+    LocalStore.deleteData('me')
+    LocalStore.deleteData('people')
+    setPage('splash')
+    setStatus(AppStatus.startup)
+  }
+
   return (
     <>
-    <div class="text-center text-sm text-gray-300 dark:text-gray-400, m-1" style={{position: 'absolute', right: 0, top: 0}}>v0.011</div>
+    <div class="text-center text-sm text-gray-300 dark:text-gray-400, m-1" style={{position: 'absolute', right: 0, top: 0}}>v0.012</div>
       {page==='splash' && 
         <Splash/>
       }
@@ -136,7 +144,7 @@ function App() {
         <Dashboard setPage={setPage} me={user} setPeople={_people=>setPeople(_people)}/>
       }
       {page==='my_info' && 
-        <MyInfo setPage={setPage} me={user}/>
+        <MyInfo setPage={setPage} me={user} signOut={signOut}/>
       }
       {page==='people' && 
         <PeopleManagement setPage={setPage} me={user} people={people} addPerson={addPerson}/>
