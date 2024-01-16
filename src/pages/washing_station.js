@@ -1,9 +1,9 @@
 import React from 'react';
 import { useState, useEffect} from 'react'
-import {Shed, BackIcon, ArrowRightIcon, QRIcon, BucketIcon, TractorIcon, Bin} from '../icons/icons'
+import {Shed, BackIcon, ArrowRightIcon, QRIcon, TractorIcon, Bin} from '../icons/icons'
 import Weight from '../components/weight'
 import {QR} from '../components/qr'
-import CollectionSummary from '../components/collection_summary'
+//import CollectionSummary from '../components/collection_summary'
 import WashingStationSummary from  '../components/washing_station_summary'
 
 const WashingStation = (props) => {
