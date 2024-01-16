@@ -38,14 +38,15 @@ const Dashboard = props => {
                 props.setPeople(_people)
             }
             let workers = await getWorkers(props.me.mobile,props.me.farm)
-            console.log(workers) 
-            LocalStore.addData('people',workers)
-            workers = workers.map(w=>{
-                if(w.id===props.me.id) w.me=true
-                return w
-            })
-            setPeople(workers)
-            props.setPeople(workers)
+            if(workers){
+                LocalStore.addData('people',workers)
+                workers = workers.map(w=>{
+                    if(w.id===props.me.id) w.me=true
+                    return w
+                })
+                setPeople(workers)
+                props.setPeople(workers)
+            }
         }
         setPeopleloading(false)
         
