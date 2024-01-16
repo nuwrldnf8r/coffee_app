@@ -1,6 +1,6 @@
 import React from 'react';
-import { useState, useEffect} from 'react'
-import {PersonCircledIcon, BackIcon, AddPersonIcon} from '../icons/icons'
+//import { useState, useEffect} from 'react'
+import {PersonCircledIcon, BackIcon} from '../icons/icons'
 
 const MyInfo = (props) => {
     return (
