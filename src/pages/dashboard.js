@@ -4,6 +4,7 @@ import {getWorkers} from '../lib/farminfo'
 import { LocalStore } from '../lib/storage'
 import Bean from '../images/bean.png'
 
+
 const Dashboard = props => {
     const [peopleLoading, setPeopleloading] = useState(false)
     const [people, setPeople] = useState([])

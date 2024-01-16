@@ -10,6 +10,7 @@ import Dashboard from './pages/dashboard'
 import InField from './pages/infield_collection'
 import CollectionPoint from './pages/collection_point'
 import WashingStation from './pages/washing_station'
+
 //import {getPrincipal, get, set} from'./lib/data'
 import { LocalStore } from './lib/storage'
 //import {add as _add, get as _get} from './lib/ipfs'
@@ -127,7 +128,7 @@ function App() {
 
   return (
     <>
-    <div class="text-center text-sm text-gray-300 dark:text-gray-400, m-1" style={{position: 'absolute', right: 0, top: 0}}>v0.012</div>
+    <div class="text-center text-sm text-gray-300 dark:text-gray-400, m-1" style={{position: 'absolute', right: 0, top: 0}}>v0.013</div>
       {page==='splash' && 
         <Splash/>
       }
