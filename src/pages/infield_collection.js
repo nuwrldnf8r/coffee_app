@@ -6,11 +6,12 @@ import Summary from '../components/infield_summary'
 import {ArrowRightIcon, CameraIcon, QRIcon, BucketIcon, BackIcon} from '../icons/icons'
 import {LocalStore} from '../lib/storage'
 import {QR} from '../components/qr'
+import Harvester from '../components/harvester_info'
 
 const InField = (props) => {
     const [status, setStatus] = useState(0)
     const [weight, setWeight] = useState()
-    const [data, setData] = useState({weight: 0, coordinates: null, image: null, ts: 0, bucketID: null})
+    const [data, setData] = useState({weight: 0, coordinates: null, image: null, ts: 0, bucketID: null, harvester: null})
     
     useEffect(() => {
         if(!data.coordinates){
@@ -67,10 +68,15 @@ const InField = (props) => {
         return true
       }
 
+      const harvesterSelect = id => {
+        let _data = Object.assign({},data)
+        _data.harvester = id
+        setData(_data)
+      }
+
       const save = async () => {
         let collected = LocalStore.addCollectedData(data)
         console.log(collected.id())
-        
       }
 
       return (
@@ -84,8 +90,15 @@ const InField = (props) => {
             {status===0 && 
                 <>
                   
-                  <div class="mx-auto text-center mt-5">Harvester Info goes here</div>
-                  <div class="mx-auto text-center font-medium mt-2"><button onClick={()=>setStatus(1)}>Next <ArrowRightIcon/></button></div>
+                  <div class="mx-auto mt-7 px-5"><Harvester onSelect={harvesterSelect}/></div>
+                  <div class="mx-auto text-center font-medium mt-5"><button onClick={()=>{
+                    if(!data.harvester){
+                      let _people = LocalStore.getData('people')
+                      _people = _people.filter(p=>Object.keys(p.role)[0]==='Harvester')
+                      harvesterSelect(_people[0].id)
+                    }
+                    setStatus(1)
+                  }}>Next <ArrowRightIcon/></button></div>
                 </>
             }
             {status===1 && 

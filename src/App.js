@@ -107,7 +107,7 @@ function App() {
   }
 
   const addPerson = async (person) => {
-    let _people = people.slice
+    let _people = people.slice()
     _people.push(person)
     setPeople(_people)
     LocalStore.addData('people',_people)

@@ -66,8 +66,8 @@ const Dashboard = props => {
             </div>
             <div class="grid grid-cols-3 text-center max-w-sm px-5 mx-auto mt-12">
                 <div>
-                    <button onClick={()=>props.setPage('infield_collection')}>
-                    <BucketIcon />
+                    <button onClick={()=>props.setPage('infield_collection')} disabled={people.filter(p=>Object.keys(p.role)[0]==='Harvester').length===0}>
+                    <BucketIcon disabled={people.filter(p=>Object.keys(p.role)[0]==='Harvester').length===0}/>
                     <label class="block mb-2 mt-2 text-xs font-small text-gray-800 dark:text-white">In-field collection</label>
                     </button>
                 </div>
