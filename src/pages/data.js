@@ -83,7 +83,7 @@ const Data = (props) => {
         } else {
             setData(null)
         }
-    })
+    },[])
 
     useEffect(()=>{
         if(!data && selected!==3){
