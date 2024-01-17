@@ -7,7 +7,7 @@ import {ArrowRightIcon, CameraIcon, QRIcon, BucketIcon, BackIcon} from '../icons
 import {LocalStore, ID} from '../lib/storage'
 import {QR} from '../components/qr'
 import Harvester from '../components/harvester_info'
-import {add} from '../lib/ipfs'
+//import {add} from '../lib/ipfs'
 
 const InField = (props) => {
     const [status, setStatus] = useState(0)
