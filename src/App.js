@@ -17,6 +17,8 @@ import { LocalStore } from './lib/storage'
 //import {getID} from './lib/id'
 import {getWorker, id, getFarmFromWorkerId} from './lib/farminfo'
 
+const v='0.013'
+
 /*
 window.getPrincipal = getPrincipal
 window.data = {get, set}
@@ -116,6 +118,8 @@ function App() {
   }
 
   const signupComplete = () => {
+    let me = LocalStore.getData('me')
+    setUser(me)
     setPage('dashboard')
   }
 
@@ -128,7 +132,7 @@ function App() {
 
   return (
     <>
-    <div class="text-center text-sm text-gray-300 dark:text-gray-400, m-1" style={{position: 'absolute', right: 0, top: 0}}>v0.013</div>
+    <div class="text-center text-sm text-gray-300 dark:text-gray-400, m-1" style={{position: 'absolute', right: 0, top: 0}}>v{v}</div>
       {page==='splash' && 
         <Splash/>
       }

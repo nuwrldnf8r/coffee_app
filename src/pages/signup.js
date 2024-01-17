@@ -51,6 +51,7 @@ const SignUp = props => {
         await updateWorker(props.mobile, farm,name,id,role.split(' ').join(''),cid)
         let user = await getWorker(props.mobile,farm,id)
         user.mobile = props.mobile //{id, name, mobile: props.mobile, farm, role, image: cid}
+        user.farm = farm
         LocalStore.addData('me',user)
         props.complete()
     }

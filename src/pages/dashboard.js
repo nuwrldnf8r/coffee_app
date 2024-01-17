@@ -39,6 +39,7 @@ const Dashboard = props => {
                 setPeople(_people)
                 props.setPeople(_people)
             }
+            console.log(props.me.farm)
             let workers = await getWorkers(props.me.mobile,props.me.farm)
             if(workers){
                 LocalStore.addData('people',workers)
@@ -61,39 +62,39 @@ const Dashboard = props => {
             <img src={Bean} class="w-8 h-8 absolute top-2 left-2" alt='bean' />
             <div class="text-center mt-3"><DashboardIcon /> <div class="inline align-middle ml-2">Dashboard</div></div>
             <div class="grid grid-cols-2 text-center max-w-sm px-10 mx-auto mt-20">
-                <div>
+                <div class=" text-slate-600">
                     <button onClick={()=>props.setPage('my_info')}>
-                    <PersonCircledIcon />
+                    <PersonCircledIcon w={10} h={10}/>
                     <label class="block mb-2 mt-2 text-xs font-small text-gray-800 dark:text-white">My information</label>
                     </button>
                 </div>
-                <div>
+                <div class=" text-slate-600">
                     <button onClick={()=>props.setPage('people')}>
-                    <UsersIcon />
+                    <UsersIcon w={10} h={10}/>
                     <label class="block mb-2 mt-2 text-xs font-small text-gray-800 dark:text-white">Manage people</label>
                     </button>
                 </div>
                 <div></div>
             </div>
             <div class="grid grid-cols-2 text-center max-w-sm px-10 mx-auto mt-12">
-                <div>
+                <div class=" text-slate-600">
                     <button onClick={()=>props.setPage('infield_collection')} disabled={people.filter(p=>Object.keys(p.role)[0]==='Harvester').length===0}>
-                    <BucketIcon disabled={people.filter(p=>Object.keys(p.role)[0]==='Harvester').length===0}/>
+                    <BucketIcon disabled={people.filter(p=>Object.keys(p.role)[0]==='Harvester').length===0} w={10} h={10}/>
                     <label class="block mb-2 mt-2 text-xs font-small text-gray-800 dark:text-white">In-field collection</label>
                     </button>
                 </div>
-                <div>
+                <div class=" text-slate-600">
                     <button onClick={()=>props.setPage('collection_point')}>
-                    <TractorIcon />
+                    <TractorIcon w={10} h={10}/>
                     <label class="block mb-2 mt-2 text-xs font-small text-gray-800 dark:text-white">Collection <br/>point</label>
                     </button>
                 </div>
                 
             </div>
             <div class="text-center  mt-12">
-                <div>
+                <div class=" text-slate-600">
                     <button onClick={()=>props.setPage('washing_station')}>
-                    <Shed />
+                    <Shed w={10} h={10}/>
                     <label class="block mb-2 mt-2 text-xs font-small text-gray-800 dark:text-white">Washing station</label>
                     </button>
                 </div>
