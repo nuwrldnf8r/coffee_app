@@ -4,6 +4,7 @@ import {TractorIcon, BackIcon, ArrowRightIcon, QRIcon, BucketIcon} from '../icon
 import Weight from '../components/weight'
 import {QR} from '../components/qr'
 import CollectionSummary from '../components/collection_summary'
+import {ID, LocalStore} from '../lib/storage'
 
 const CollectionPoint = (props) => {
     const [status, setStatus] = useState(0)
@@ -68,7 +69,22 @@ const CollectionPoint = (props) => {
     }
 
     const save = () => {
-        
+        let id = ID.collectionPointID(data.coordinates,data.ts,data.weight,data.bucketID,data.tractorBinID)
+        console.log('ID: ' + id)
+        if(!id) throw new Error('id undefined')
+        let toUpload = LocalStore.getData('toUpload')
+        if(!toUpload)toUpload = {collectionPoint:[]}
+        if(!toUpload.collectionPoint)toUpload.collectionPoint = []
+        if(toUpload.collectionPoint.length>0 && toUpload.collectionPoint.filter(itm=>itm.id===id).length>0) {
+          props.setPage('dashboard')
+          return
+        }
+        let me = LocalStore.getData('me')
+        toUpload.collectionPoint.push({ts: data.ts, id, farm: me.farm})
+        LocalStore.addData('toUpload',toUpload)
+        let _data = ID.decodeCollectionPointID(id)
+        console.log(_data)
+        props.setPage('dashboard')
     }
 
     return (

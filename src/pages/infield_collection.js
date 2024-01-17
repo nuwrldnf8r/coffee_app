@@ -4,9 +4,10 @@ import CameraComponent  from '../components/camera'
 import Weight from '../components/weight'
 import InfieldSummary from '../components/infield_summary'
 import {ArrowRightIcon, CameraIcon, QRIcon, BucketIcon, BackIcon} from '../icons/icons'
-import {LocalStore} from '../lib/storage'
+import {LocalStore, ID} from '../lib/storage'
 import {QR} from '../components/qr'
 import Harvester from '../components/harvester_info'
+import {add} from '../lib/ipfs'
 
 const InField = (props) => {
     const [status, setStatus] = useState(0)
@@ -73,10 +74,22 @@ const InField = (props) => {
       }
 
       const save = async () => {
-        /*
-        let collected = LocalStore.addCollectedData(data)
-        console.log(collected.id())
-        */
+        let id = ID.infieldCollectionID(data.coordinates,data.ts,data.weight,data.bucketID)
+        console.log('ID: ' + id)
+        let toUpload = LocalStore.getData('toUpload')
+        if(!toUpload)toUpload = {infieldCollection:[]}
+        if(!toUpload.infieldCollection)toUpload.infieldCollection = []
+        if(toUpload.infieldCollection.filter(itm=>itm.id===id).length>0) {
+          props.setPage('dashboard')
+          return
+        }
+        let me = LocalStore.getData('me')
+        console.log('uploading image')
+        toUpload.infieldCollection.push({ts: data.ts, id, harvester: data.harvester, farm: me.farm, image: data.image})
+        LocalStore.addData('toUpload',toUpload)
+        let _data = ID.decodeInfieldCollectionID(id)
+        console.log(_data)
+        props.setPage('dashboard')
       }
 
       return (
@@ -115,7 +128,7 @@ const InField = (props) => {
             }
             {status===3 && 
                 <>
-                <div class="text-center align-middle mb-2 font-medium"><CameraIcon/> <div class="inline align-middle">Take a photo of the bucket</div> <BucketIcon/></div>
+                <div class="text-center align-middle mb-2 mt-3 font-medium"><CameraIcon/> <div class="inline align-middle">Take a photo of the bucket</div> <BucketIcon/></div>
                 <CameraComponent saveImage={setImageData}/>
                 </>
             }

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {PersonCircledIcon, UsersIcon, BucketIcon, TractorIcon, Shed, DashboardIcon} from '../icons/icons' 
+import {PersonCircledIcon, UsersIcon, BucketIcon, TractorIcon, Shed, DashboardIcon, DataIcon} from '../icons/icons' 
 import {getWorkers} from '../lib/farminfo'
 import { LocalStore } from '../lib/storage'
 import Bean from '../images/bean.png'
@@ -91,11 +91,17 @@ const Dashboard = props => {
                 </div>
                 
             </div>
-            <div class="text-center  mt-12">
+            <div class="grid grid-cols-2 text-center max-w-sm px-10 mx-auto mt-12">
                 <div class=" text-slate-600">
                     <button onClick={()=>props.setPage('washing_station')}>
                     <Shed w={10} h={10}/>
                     <label class="block mb-2 mt-2 text-xs font-small text-gray-800 dark:text-white">Washing station</label>
+                    </button>
+                </div>
+                <div class=" text-slate-600">
+                    <button onClick={()=>props.setPage('data')}>
+                    <DataIcon w={10} h={10}/>
+                    <label class="block mb-2 mt-2 text-xs font-small text-gray-800 dark:text-white">Data</label>
                     </button>
                 </div>
             </div>

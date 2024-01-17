@@ -5,6 +5,7 @@ import Weight from '../components/weight'
 import {QR} from '../components/qr'
 //import CollectionSummary from '../components/collection_summary'
 import WashingStationSummary from  '../components/washing_station_summary'
+import {ID, LocalStore} from '../lib/storage'
 
 const WashingStation = (props) => {
     const [status, setStatus] = useState(0)
@@ -69,6 +70,25 @@ const WashingStation = (props) => {
     }
 
     const save = () => {
+        
+        let id = ID.washingStationID(data.coordinates,data.ts,data.weight,data.tractorBinID,data.washingStationBinID)
+        console.log('ID: ' + id)
+        
+        
+        if(!id) throw new Error('id undefined')
+        let toUpload = LocalStore.getData('toUpload')
+        if(!toUpload)toUpload = {washingStation:[]}
+        if(!toUpload.washingStation)toUpload.washingStation = []
+        if(toUpload.washingStation.length>0 && toUpload.washingStation.filter(itm=>itm.id===id).length>0) {
+          props.setPage('dashboard')
+          return
+        }
+        let me = LocalStore.getData('me')
+        toUpload.washingStation.push({ts: data.ts, id, farm: me.farm})
+        LocalStore.addData('toUpload',toUpload)
+        let _data = ID.decodeWashingStationID(id)
+        console.log(_data)
+        props.setPage('dashboard')
         
     }
 

@@ -38,10 +38,10 @@ const WashingStationSummary = (props) => {
             <div class="text-xs">Timestamp:</div>
             <div class="mb-2 text-xs text-slate-500 text-center">{formatTimestamp(props.ts)}</div>
             <div class="text-xs  mb-2">Recorded weight:
-            <div class="inline text-slate-500 pl-5">{props.weight}</div></div>
-            <div class="text-xs">Tractor Bin ID: <div class="inline text-slate-500">{props.tractorBinID}</div></div>
-            <div class="text-xs">Washing Station Bin ID: <div class="inline text-slate-500">{props.washingStationBinID}</div></div>
-            <div class="text-center mt-3 align-middle"><button onClick={props.save}><SaveIcon/> Save</button></div>
+            <div class="inline text-slate-500"> {props.weight}</div></div>
+            <div class="text-xs">Tractor Bin ID: <div class="inline text-slate-500"> {props.tractorBinID}</div></div>
+            <div class="text-xs mt-2">Washing Station Bin ID: <div class="inline text-slate-500"> {props.washingStationBinID}</div></div>
+            <div class="text-center mt-5 align-middle"><button onClick={props.save}><SaveIcon/> Save</button></div>
         </div>
     )
 }

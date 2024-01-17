@@ -10,7 +10,7 @@ import Dashboard from './pages/dashboard'
 import InField from './pages/infield_collection'
 import CollectionPoint from './pages/collection_point'
 import WashingStation from './pages/washing_station'
-
+import Data from './pages/data.js'
 //import {getPrincipal, get, set} from'./lib/data'
 import { LocalStore } from './lib/storage'
 //import {add as _add, get as _get} from './lib/ipfs'
@@ -162,6 +162,9 @@ function App() {
       }
       {page==='washing_station' && 
         <WashingStation setPage={setPage} me={user}/>
+      }
+      {page==='data' && 
+        <Data  setPage={setPage} me={user} />
       }
       
     </>
