@@ -17,7 +17,7 @@ import { LocalStore } from './lib/storage'
 //import {getID} from './lib/id'
 import {getWorker, id, getFarmFromWorkerId} from './lib/farminfo'
 
-const v='0.014'
+const v='0.015'
 
 /*
 window.getPrincipal = getPrincipal
