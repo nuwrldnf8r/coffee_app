@@ -10,6 +10,7 @@ const Harvester = props => {
         let _people = LocalStore.getData('people')
         _people = _people.filter(p=>Object.keys(p.role)[0]==='Harvester')
         setPeople(_people)
+        props.onSelect(_people[0].id)
     },[setPeople])
 
     return (

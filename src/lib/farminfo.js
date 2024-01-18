@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {ID} from './storage'
 const endpoint = "/.netlify/functions"
 
 export const addFarm = async (mobile, farmName, metadata) => {
@@ -96,6 +97,44 @@ export const id = async (mobile) => {
     try{
         const ret = await axios.get(`${endpoint}/farm_info_canister?method=id&mobile=${mobile}`)
         return ret.data
+    } catch(e){
+        return e.message
+    }
+}
+
+export const addData = async (mobile, id, ts, farm, metadata) => {
+    id = ID.base64ToHex(id)
+    metadata = metadata || ''
+    try{
+        const ret = await axios.post(`${endpoint}/farm_info_canister`, {method: 'add_data', mobile, id, ts, farm, metadata})
+        return ret.data
+    } catch(e){
+        return e.message
+    }
+}
+
+export const getDataByID = async (mobile, id) => {
+    id = ID.base64ToHex(id)
+    try{
+        const ret = await axios.get(`${endpoint}/farm_info_canister?method=get_data_by_id&mobile=${mobile}&id=${id}`)
+        return ret.data
+    } catch(e){
+        return e.message
+    }
+}
+
+export const getDataByFarm = async (mobile, farm, tsStart, tsEnd) => {
+    try{
+        const ret = await axios.get(`${endpoint}/farm_info_canister?method=get_data_by_farm&mobile=${mobile}&farm=${farm}&tsStart=${tsStart}&tsEnd=${tsEnd}`)
+        let data = ret.data.map(itm=>{
+            itm.id = ID.hexToBase64(itm.id)
+            for(let i in itm.metadata){
+                itm[i] = itm.metadata[i]
+            }
+            delete itm.metadata
+            return itm
+        })
+        return data
     } catch(e){
         return e.message
     }

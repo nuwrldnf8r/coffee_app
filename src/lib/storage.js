@@ -173,7 +173,9 @@ export const ID = {
     decodeCollectionPointID,
     washingStationID,
     decodeWashingStationID,
-    decode
+    decode,
+    base64ToHex,
+    hexToBase64
 }
 
 export const LocalStore = {

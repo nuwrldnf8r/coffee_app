@@ -9,13 +9,18 @@ const bip39 = require('bip39')
 const {Secp256k1KeyIdentity} = require('@dfinity/identity-secp256k1')
 
 const idlFactory = ({ IDL }) => {
+  const Data = IDL.Record({
+    'id' : IDL.Text,
+    'ts' : IDL.Int64,
+    'metadata' : IDL.Text,
+    'farm_id' : IDL.Vec(IDL.Nat8),
+  });
   const Farm = IDL.Record({
     'metadata' : IDL.Text,
     'name' : IDL.Text,
     'farmer' : IDL.Text,
   });
   const Role = IDL.Variant({
-    'Scout' : IDL.Null,
     'Farmer' : IDL.Null,
     'Harvester' : IDL.Null,
     'ReceivingManager' : IDL.Null,
@@ -31,9 +36,14 @@ const idlFactory = ({ IDL }) => {
     'approved' : IDL.Bool,
   });
   return IDL.Service({
+    'add_data' : IDL.Func([IDL.Text, IDL.Int64, IDL.Text, IDL.Text], [], []),
     'add_farm' : IDL.Func([IDL.Text, IDL.Text], [], []),
-    'delete_farm' : IDL.Func([IDL.Text], [], []),
-    'delete_worker' : IDL.Func([IDL.Text], [], []),
+    'get_data_by_farm' : IDL.Func(
+        [IDL.Text, IDL.Int64, IDL.Int64],
+        [IDL.Vec(Data)],
+        [],
+      ),
+    'get_data_by_id' : IDL.Func([IDL.Text], [Data], []),
     'get_farm' : IDL.Func([IDL.Text], [IDL.Opt(Farm)], ['query']),
     'get_farm_from_workerid' : IDL.Func([IDL.Text], [IDL.Opt(Farm)], ['query']),
     'get_farms' : IDL.Func([], [IDL.Vec(Farm)], ['query']),
@@ -45,14 +55,18 @@ const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'id' : IDL.Func([], [IDL.Text], ['query']),
+    'update_farmer' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, Role, IDL.Text],
+        [],
+        [],
+      ),
     'update_worker' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, Role, IDL.Text],
         [],
         [],
       ),
   });
-};
-
+}
 
 const canisterId =  'nqvbb-mqaaa-aaaak-afhsq-cai' //"nqvbb-mqaaa-aaaak-afhsq-cai"
 //const host = 'https://icp-api.io'
@@ -250,6 +264,50 @@ const id = async (mobile) => {
   }
 }
 
+const addData = async (mobile, id, ts, farm, metadata) => {
+  try{
+    const actor = await createActor(mobile)
+    await actor.add_data(id,BigInt(ts),farm,metadata)
+    return {success: true}
+
+  } catch(e){
+    console.log(e)
+    return {error: e.message}
+  }
+}
+
+const getDataByID = async (mobile, id) => {
+  try{
+    const actor = await createActor(mobile)
+    let ret = await actor.get_data_by_id(id)
+    return ret
+
+  } catch(e){
+    console.log(e)
+    return {error: e.message}
+  }
+}
+
+const getDataByFarm = async (mobile, farm, tsStart, tsEnd) => {
+  console.log('getting data by farm')
+  try{
+    const actor = await createActor(mobile)
+    let ret = await actor.get_data_by_farm(farm, BigInt(tsStart), BigInt(tsEnd))
+    ret = ret.map(data=>{
+      data.ts = parseInt(data.ts.toString())
+      data.metadata = JSON.parse(data.metadata)
+      return data
+    })
+    console.log(ret)
+
+    return ret
+
+  } catch(e){
+    console.log(e)
+    return {error: e.message}
+  }
+}
+
 exports.handler = async (event, context) => {
   if(event.httpMethod==='POST'){
       try{
@@ -269,6 +327,9 @@ exports.handler = async (event, context) => {
           }
           if(body.method && body.method==='delete_farm' && body.mobile && body.farm){
             ret = await deleteFarm(body.mobile,body.farm)
+          }
+          if(body.method && body.method==='add_data' && body.id && body.ts && body.farm && body.metadata){
+            ret = await addData(body.mobile,body.id,body.ts,body.farm,body.metadata)
           }
           if(!ret.error) return { statusCode: 200, body: JSON.stringify({success: true}) }
           return { statusCode: 400, body: JSON.stringify(ret)}
@@ -301,9 +362,16 @@ exports.handler = async (event, context) => {
         if(params.method && params.method==='get_workers_from_workerid' && params.mobile && params.id){
           ret = await getWorkersFromWorkerId(params.mobile, params.id)
         }
+        if(params.method && params.method==='get_data_by_id' && params.mobile && params.id){
+          ret = await getDataByID(params.mobile, params.id)
+        }
+        if(params.method && params.method==='get_data_by_farm' && params.mobile && params.farm && params.tsStart && params.tsEnd){
+          ret = await getDataByFarm(params.mobile, params.farm, params.tsStart, params.tsEnd)
+        }
         if(!ret.error) return { statusCode: 200, body: JSON.stringify(ret) }
         return { statusCode: 400, body: JSON.stringify(ret)}
       } catch(e) {
+        console.log(e)
         return { statusCode: 400, body: JSON.stringify({error: e.message })}
       }
       

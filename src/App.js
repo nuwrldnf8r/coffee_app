@@ -11,14 +11,12 @@ import InField from './pages/infield_collection'
 import CollectionPoint from './pages/collection_point'
 import WashingStation from './pages/washing_station'
 import Data from './pages/data.js'
-//import {getPrincipal, get, set} from'./lib/data'
 import { LocalStore } from './lib/storage'
-//import {add as _add, get as _get} from './lib/ipfs'
-//import {getID} from './lib/id'
-import {getWorker, id, getFarmFromWorkerId} from './lib/farminfo'
+import {getWorker, id, getFarmFromWorkerId, getDataByFarm} from './lib/farminfo'
 
-const v='0.015'
+const v='0.016'
 
+window.getDataByFarm = getDataByFarm
 /*
 window.getPrincipal = getPrincipal
 window.data = {get, set}
@@ -97,6 +95,7 @@ function App() {
       let user = await getWorker(mobile, farm.name, _id)
       if(!user){
         console.log('error - no user')
+        signUp(mobile)
         return
       }
       //let user = {id: _id, name, mobile: props.mobile, farm, role, image: cid}

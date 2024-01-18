@@ -70,6 +70,8 @@ const InField = (props) => {
       const harvesterSelect = id => {
         let _data = Object.assign({},data)
         _data.harvester = id
+        console.log('****harvester')
+        console.log(_data.harvester)
         setData(_data)
       }
 
@@ -84,7 +86,7 @@ const InField = (props) => {
           return
         }
         let me = LocalStore.getData('me')
-        console.log('uploading image')
+        console.log(data)
         toUpload.infieldCollection.push({ts: data.ts, id, harvester: data.harvester, farm: me.farm, image: data.image})
         LocalStore.addData('toUpload',toUpload)
         let _data = ID.decodeInfieldCollectionID(id)
