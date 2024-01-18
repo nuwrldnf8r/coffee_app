@@ -2,6 +2,7 @@ import React, {useState, useEffect, useCallback} from 'react'
 import { BackIcon, DataIcon, BucketIcon, TractorIcon, Shed, QRIcon } from '../icons/icons'
 import { LocalStore, ID } from '../lib/storage'
 import QRCode from 'react-qr-code'
+import {QR} from '../components/qr'
 
 const Data = (props) => {
     const [selected, setSelected] = useState(0)
@@ -92,6 +93,42 @@ const Data = (props) => {
         
     },[selected, select, data])
 
+    const qrResult = (result) => {
+        let decoded = ID.decode(result)
+        console.log(decoded)
+        
+        if(decoded.type==='none') return false
+        let me = LocalStore.getData('me')
+        let toUpload = LocalStore.getData('toUpload')
+        toUpload = toUpload || {}
+        if(decoded.type==='c'){
+            if(!toUpload.infieldCollection)toUpload.infieldCollection = []
+            if(!toUpload.infieldCollection.find(itm=>itm.id===decoded.id)){
+                console.log('here')
+                toUpload.infieldCollection.push({ts:decoded.data.ts, id: decoded.id, farm: me.farm})
+                //console.log(toUpload)
+                LocalStore.addData('toUpload',toUpload)
+                select(0)
+            }
+        } else if(decoded.type==='C'){
+            if(!toUpload.collectionPoint)toUpload.collectionPoint = []
+            if(!toUpload.collectionPoint.find(itm=>itm.id===decoded.id)){
+                toUpload.collectionPoint.push({ts:decoded.data.ts, id: decoded.id, farm: me.farm})
+                LocalStore.addData(toUpload)
+                select(1)
+            }
+        } else if(decoded.type==='W'){
+            if(!toUpload.washingStation)toUpload.washingStation = []
+            if(!toUpload.washingStation.find(itm=>itm.id===decoded.id)){
+                toUpload.washingStation.push({ts:decoded.data.ts, id: decoded.id, farm: me.farm})
+                LocalStore.addData(toUpload)
+                select(2)
+            }
+        }
+        return true
+        
+    }
+
     return (
         <>
         <div class="ml-2 mt-2">
@@ -161,6 +198,9 @@ const Data = (props) => {
                     </>
                 }
                 </>
+            }
+            {selected===3 && 
+                <div><QR result={qrResult} /></div>
             }
             
         </div>

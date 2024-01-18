@@ -157,13 +157,23 @@ const decodeWashingStationID = (id) => {
     return {coordinates, ts, weight, binID, wsBinID}
 }
 
+const decode = (id) => {
+    let hex = base64ToHex(id)
+    let prefix = hexToString(hex.substring(0,2))
+    if(prefix==='c') return {id, type: 'c', data: decodeInfieldCollectionID(id)}
+    if(prefix==='C') return {id, type: 'C', data: decodeCollectionPointID(id)}
+    if(prefix==='W') return {id, type: 'W', data: decodeWashingStationID(id)}
+    return {type: 'none', data: id}
+}
+
 export const ID = {
     infieldCollectionID, 
     decodeInfieldCollectionID,
     collectionPointID,
     decodeCollectionPointID,
     washingStationID,
-    decodeWashingStationID
+    decodeWashingStationID,
+    decode
 }
 
 export const LocalStore = {
