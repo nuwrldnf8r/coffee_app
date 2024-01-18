@@ -7,11 +7,13 @@ const Harvester = props => {
     const liAr = people.map(p=><option value={p.id} key={p.id}>{p.name}</option>)
     
     useEffect(()=>{
-        let _people = LocalStore.getData('people')
-        _people = _people.filter(p=>Object.keys(p.role)[0]==='Harvester')
-        setPeople(_people)
-        props.onSelect(_people[0].id)
-    },[setPeople])
+        if(people.length===0){
+            let _people = LocalStore.getData('people')
+            _people = _people.filter(p=>Object.keys(p.role)[0]==='Harvester')
+            setPeople(_people)
+            props.onSelect(_people[0].id)
+        }
+    },[setPeople, people, props])
 
     return (
         <>
