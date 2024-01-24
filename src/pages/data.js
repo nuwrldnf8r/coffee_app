@@ -1,22 +1,29 @@
 import React, {useState, useEffect, useCallback} from 'react'
 import { BackIcon, DataIcon, BucketIcon, TractorIcon, Shed, QRIcon } from '../icons/icons'
 import { LocalStore, ID } from '../lib/storage'
-import QRCode from 'react-qr-code'
 import {QR} from '../components/qr'
 import {Spinner, UploadIcon} from '../icons/icons'
-import {getDataByFarm, addData} from '../lib/farminfo'
+import {addData, getDataByFarm} from '../lib/farminfo'  //getDataByFarm,
 import {add} from '../lib/ipfs'
+import DataInfo from '../components/data_display'
 const Data = (props) => {
     const [selected, setSelected] = useState(0)
     const [data, setData] = useState(null)
     const [dataToScan, setDataToScan] = useState(null)
-    const [uploadedData, setUploaded] = useState(null)
     const [loading, setLoading] = useState(false)
     const [uploading, setUploading] = useState([])
+    const [uploadedData, setUploaded] = useState(null)
 
-    const getUploadedData = async() => {
-        let me = LocalStore.getData('me')
-        let data = await getDataByFarm(me.mobile,me.farm,0,Date.now())
+    const getUploadedData = async(uploadnew) => {
+        
+        let data = LocalStore.getData('data')
+        if(!data || uploadnew){
+            setLoading(true)
+            let me = LocalStore.getData('me')
+            data = await getDataByFarm(me.mobile,me.farm,0,Date.now())
+            setLoading(false)
+        }
+        setUploaded(data)
         return data
     }
 
@@ -36,24 +43,18 @@ const Data = (props) => {
             console.log(metadata.imageCID)
         }
         console.log('uploading...')
-        let ret = await addData(me.mobile,_data.id,_data.ts,me.farm,JSON.stringify(metadata))
-        console.log(ret)
-        let _uploaded = uploadedData.slice()
-        _uploaded.push(_data)
-        setUploaded(_uploaded)
+        await addData(me.mobile,_data.id,_data.ts,me.farm,JSON.stringify(metadata))
+        //await getUploadedData(true)
+        let localData = LocalStore.getData('data')
+        localData.push(_data)
+        LocalStore.addData('data',localData)
         _uploading = uploading.slice().filter(id=>id!==_data.id)
-
         setUploading(_uploading)
+        select(selected)
     }
 
     const dataSelected = (id) => {
         setDataToScan(id)
-    }
-
-    const isUploaded = (id) => {
-        if(!uploadedData) return false
-        let ret = uploadedData.find(itm=>itm.id===id)
-        return ret && ret.id
     }
 
     const formatTimestamp = (timestamp) => {
@@ -71,9 +72,41 @@ const Data = (props) => {
     const unselectedClass = 'inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300'
     const selectedClass = 'inline-block p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500'
     
+    const sortLoadedData = () => {
+        let me = LocalStore.getData('me')
+        let _data = LocalStore.getData('data')
+        let sorted = {}
+        if(!_data) return sorted
+        console.log(_data)
+        _data.forEach(itm=>{
+            let parsed = ID.decode(itm.id)
+            let _type = (parsed.type==='c')?'infieldCollection':
+                (parsed.type==='C')?'collectionPoint':'washingStation'
+            if(!sorted[_type])sorted[_type] = []
+            delete itm.farm_id
+            itm.farm = me.farm
+            itm.uploaded = true
+            sorted[_type].push(itm)
+        })
+        return sorted
+    }
+
     const select = useCallback((selection) => {
+        setDataToScan(null)
         setSelected(selection)
-        let _data = LocalStore.getData('toUpload')
+        let _data = sortLoadedData()
+        console.log(_data)
+        let toUpload = LocalStore.getData('toUpload')
+        for(let _type in toUpload){
+            toUpload[_type].forEach(itm=>{
+                if(!_data[_type])_data[_type] = []
+                if(!_data[_type].find(_itm=>_itm.id===itm.id)){
+                    itm.uploaded = false
+                    _data[_type].push(itm)
+                }                
+            })
+        }
+        //console.log(_data)
         if(selection===0 && _data){
             if(_data.infieldCollection){
                 let ar = _data.infieldCollection.sort((a,b)=>a.ts>b.ts)
@@ -103,6 +136,7 @@ const Data = (props) => {
         } else {
             setData(null)
         }
+
     },[])
 
     useEffect(()=>{
@@ -166,6 +200,8 @@ const Data = (props) => {
         
     }
 
+    
+
     return (
         <>
         <div class="ml-2 mt-2">
@@ -220,7 +256,7 @@ const Data = (props) => {
                                                     {loading && 
                                                         <Spinner w={4} h={4} />
                                                     }
-                                                    {(!loading && !isUploaded(itm.id) && uploading.indexOf(itm.id)===-1) && 
+                                                    {(!loading && !itm.uploaded && uploading.indexOf(itm.id)===-1) && 
                                                         <button onClick={(e)=>{upload(itm);e.stopPropagation()}}><UploadIcon w={4} h={4} /></button>
                                                     }
                                                     {uploading.indexOf(itm.id)>-1 && 
@@ -259,7 +295,7 @@ const Data = (props) => {
                                                 {loading && 
                                                     <Spinner w={4} h={4} />
                                                 }
-                                                {(!loading && !isUploaded(itm.id) && uploading.indexOf(itm.id)===-1) && 
+                                                {(!loading && !itm.uploaded && uploading.indexOf(itm.id)===-1) && 
                                                     <button onClick={(e)=>{upload(itm);e.stopPropagation()}}><UploadIcon w={4} h={4} /></button>
                                                 }
                                                 {uploading.indexOf(itm.id)>-1 && 
@@ -297,7 +333,7 @@ const Data = (props) => {
                                                 {loading && 
                                                     <Spinner w={4} h={4} />
                                                 }
-                                                {(!loading && !isUploaded(itm.id) && uploading.indexOf(itm.id)===-1) && 
+                                                {(!loading && !itm.uploaded && uploading.indexOf(itm.id)===-1) && 
                                                     <button onClick={(e)=>{upload(itm);e.stopPropagation()}}><UploadIcon w={4} h={4} /></button>
                                                 }
                                                 {uploading.indexOf(itm.id)>-1 && 
@@ -315,11 +351,9 @@ const Data = (props) => {
                     }
                     </>
                 }
+                
                 {dataToScan && 
-                    <>
-                    <div class="p-7"><QRCode value={dataToScan} /></div>
-                    <div class="text-center m-4"><button onClick={()=>setDataToScan(null)}><BackIcon /> Back</button></div>
-                    </>
+                    <DataInfo id={dataToScan} data={data} back={()=>setDataToScan(null)} />
                 }
                 </>
             }

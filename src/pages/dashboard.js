@@ -9,6 +9,7 @@ const Dashboard = props => {
     const [peopleLoading, setPeopleloading] = useState(false)
     const [people, setPeople] = useState([])
     const [farm, setFarm] = useState(null)
+    
 
 
     useEffect(()=>{
@@ -41,7 +42,7 @@ const Dashboard = props => {
             }
             console.log(props.me.farm)
             let workers = await getWorkers(props.me.mobile,props.me.farm)
-            if(workers){
+            if(workers && workers.map){
                 LocalStore.addData('people',workers)
                 workers = workers.map(w=>{
                     if(w.id===props.me.id) w.me=true
@@ -49,6 +50,10 @@ const Dashboard = props => {
                 })
                 setPeople(workers)
                 props.setPeople(workers)
+            } else {
+                console.log('*********************')
+                console.log(workers)
+                console.log('*********************')
             }
         }
         setPeopleloading(false)
@@ -63,13 +68,13 @@ const Dashboard = props => {
             <div class="text-center mt-3"><DashboardIcon /> <div class="inline align-middle ml-2">Dashboard</div></div>
             <div class="grid grid-cols-2 text-center max-w-sm px-10 mx-auto mt-20">
                 <div class=" text-slate-600">
-                    <button onClick={()=>props.setPage('my_info')}>
+                    <button onClick={()=>{props.setPage('my_info')}}>
                     <PersonCircledIcon w={10} h={10}/>
                     <label class="block mb-2 mt-2 text-xs font-small text-gray-800 dark:text-white">My information</label>
                     </button>
                 </div>
                 <div class=" text-slate-600">
-                    <button onClick={()=>props.setPage('people')}>
+                    <button onClick={()=>{props.setPage('people')}}>
                     <UsersIcon w={10} h={10}/>
                     <label class="block mb-2 mt-2 text-xs font-small text-gray-800 dark:text-white">Manage people</label>
                     </button>
@@ -78,13 +83,13 @@ const Dashboard = props => {
             </div>
             <div class="grid grid-cols-2 text-center max-w-sm px-10 mx-auto mt-12">
                 <div class=" text-slate-600">
-                    <button onClick={()=>props.setPage('infield_collection')} disabled={people.filter(p=>Object.keys(p.role)[0]==='Harvester').length===0}>
+                    <button onClick={()=>{props.setPage('infield_collection')}} disabled={people.filter(p=>Object.keys(p.role)[0]==='Harvester').length===0}>
                     <BucketIcon disabled={people.filter(p=>Object.keys(p.role)[0]==='Harvester').length===0} w={10} h={10}/>
                     <label class="block mb-2 mt-2 text-xs font-small text-gray-800 dark:text-white">In-field collection</label>
                     </button>
                 </div>
                 <div class=" text-slate-600">
-                    <button onClick={()=>props.setPage('collection_point')}>
+                    <button onClick={()=>{props.setPage('collection_point')}}>
                     <TractorIcon w={10} h={10}/>
                     <label class="block mb-2 mt-2 text-xs font-small text-gray-800 dark:text-white">Collection <br/>point</label>
                     </button>

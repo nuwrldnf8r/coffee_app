@@ -14,9 +14,11 @@ import Data from './pages/data.js'
 import { LocalStore } from './lib/storage'
 import {getWorker, id, getFarmFromWorkerId, getDataByFarm} from './lib/farminfo'
 
-const v='0.016'
 
-window.getDataByFarm = getDataByFarm
+
+
+const v='0.017'
+
 /*
 window.getPrincipal = getPrincipal
 window.data = {get, set}
@@ -59,6 +61,7 @@ function App() {
   const [user, setUser] = useState(null)
   const [loggingIn, setLoggingIn] = useState(false)
   const [people, setPeople] = useState([])
+  const [data, setData] = useState(null)
 
   useEffect(()=>{
     if(status===AppStatus.startup){
@@ -75,6 +78,13 @@ function App() {
       
     }
   },[status])
+
+  useEffect(()=>{
+    if(!data){
+        console.log('loading data')
+        getUploadedData().then()
+    }
+  })
 
   const signUp = (mobile) => {
     setPage('signup#' + mobile)
@@ -109,6 +119,23 @@ function App() {
     }
   }
 
+  const getUploadedData = async() => {
+    console.log('fetching data')
+    if(user){
+      let _data = await getDataByFarm(user.mobile,user.farm,0,Date.now())
+      /*
+      if(!data){
+        setInterval(async ()=>{
+          await getUploadedData()
+        }, 60000)
+      }
+      */
+      setData(_data)
+      LocalStore.addData('data',_data)
+    }
+    
+}
+
   const addPerson = async (person) => {
     let _people = people.slice()
     _people.push(person)
@@ -125,6 +152,8 @@ function App() {
   const signOut = () => {
     LocalStore.deleteData('me')
     LocalStore.deleteData('people')
+    LocalStore.deleteData('toUpload')
+    LocalStore.deleteData('data')
     setPage('splash')
     setStatus(AppStatus.startup)
   }
@@ -163,7 +192,7 @@ function App() {
         <WashingStation setPage={setPage} me={user}/>
       }
       {page==='data' && 
-        <Data  setPage={setPage} me={user} />
+        <Data  setPage={setPage} me={user} getData={getUploadedData}/>
       }
       
     </>

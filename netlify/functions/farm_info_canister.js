@@ -8,6 +8,7 @@ const bip39 = require('bip39')
 
 const {Secp256k1KeyIdentity} = require('@dfinity/identity-secp256k1')
 
+
 const idlFactory = ({ IDL }) => {
   const Data = IDL.Record({
     'id' : IDL.Text,
@@ -114,7 +115,7 @@ const createActor = async (mobile) => {
   const identity = await getIdentity(mobile)
   
   try{
-    const agent = new HttpAgent({host: host, identity})
+    const agent = new HttpAgent({host: host, identity, timeout: 30000})
     //agent.fetchRootKey()
     return Actor.createActor(idlFactory, {
       agent,

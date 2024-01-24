@@ -5,7 +5,7 @@ const Splash = () => {
     return (
         <>
         <img src={splash} alt='splash' height='200' width='200' class="m-auto mt-40" />
-        <div class="text-center text-sm">loading..</div>
+        <div class="text-center text-xs text-gray-500">loading..</div>
         </>
     )
 }
