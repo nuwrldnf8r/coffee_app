@@ -56,7 +56,6 @@ const getKeyPair = (mobile) => {
     const privateKeyHex = privateKeyBuffer.toString('hex')
     const secp256k1 = new ec('secp256k1');
     const keyPair = secp256k1.keyFromPrivate(privateKeyHex, 'hex')
-    ;
     const publicKeyHex = keyPair.getPublic('hex')
     return {privateKeyHex, publicKeyHex}
 }
@@ -85,8 +84,10 @@ const createActor = async (mobile) => {
 
 const id = async (mobile) => {
   try{
-    const actor = await createActor(mobile)
-    let ret = await actor.id()
+    //const actor = await createActor(mobile)
+    //let ret = await actor.id()
+    const identity = await getIdentity(mobile)
+    let ret = identity.getPrincipal().toText()
     return ret
 
   } catch(e){
