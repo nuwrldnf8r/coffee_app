@@ -77,7 +77,20 @@ function hexToString(hex) {
       str += String.fromCharCode(charCode);
     }
     return str;
+}
+
+async function sha256(message) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+    return hashHex;
   }
+
+const checksum = (geohashHex) => {
+    return sha256(geohashHex).substr(0,2)
+}
 
 const infieldCollectionID = (coordinates,ts,weight,bucketID) => {
     let geohash = Geohash.encode(coordinates.latitude,coordinates.longitude,14)
@@ -86,20 +99,24 @@ const infieldCollectionID = (coordinates,ts,weight,bucketID) => {
     let weighthex = weightToHex(weight)
     console.log('weight',weighthex.length)
     let bucketHex = bucketID.toString(16).padStart(6,'0')
-    return hexToBase64(stringToHex('c') + tshex + weighthex + bucketHex + geohex)
+    let chk = checksum(geohex)
+    return hexToBase64(stringToHex('c') + chk + tshex + weighthex + bucketHex + geohex)
 }
 
 const decodeInfieldCollectionID = (id) => {
-    
     let hex = base64ToHex(id)
     let prefix = hexToString(hex.substring(0,2))
     if(prefix!=='c') throw new Error('invalid id')
-    hex = hex.substring(2)
-    let tshex = hex.substring(0,14)
-    let ts = parseInt(tshex,16)
-    let weight = hexToWeight(hex.substring(14,20))
-    let bucketID = parseInt(hex.substring(20,26),16)
+    let chk = hex.substring(0,2)
+    hex = hex.substring(4)
     let geohex = hex.substring(26)
+    if(chk!==checksum(geohex)) throw new Error('checksum invalid')
+    let tshex = hex.substring(0,14)
+    let weighthex = hex.substring(14,20)
+    let buckethex = hex.substring(20,26)
+    let ts = parseInt(tshex,16)
+    let weight = hexToWeight(weighthex)
+    let bucketID = parseInt(buckethex,16)
     let geohash = hexToGeohash(geohex)
     let coordinates = Geohash.decode(geohash)
     return {coordinates, ts, weight, bucketID}
@@ -108,24 +125,30 @@ const decodeInfieldCollectionID = (id) => {
 const collectionPointID = (coordinates,ts,weight,bucketID,binID) => {
     let geohash = Geohash.encode(coordinates.latitude,coordinates.longitude,14)
     let geohex = geohashToHex(geohash)
+    let chk = checksum(geohex)
     let tshex = ts.toString(16).padStart(14, '0')
     let weighthex = weightToHex(weight)
     let bucketHex = bucketID.toString(16).padStart(6,'0')
     let binHex = binID.toString(16).padStart(6,'0')
-    return hexToBase64(stringToHex('C') + tshex + weighthex + bucketHex + binHex + geohex)
+    return hexToBase64(stringToHex('C') + chk + tshex + weighthex + bucketHex + binHex + geohex)
 }
 
 const decodeCollectionPointID = (id) => {
     let hex = base64ToHex(id)
     let prefix = hexToString(hex.substring(0,2))
     if(prefix!=='C') throw new Error('invalid id')
-    hex = hex.substring(2)
-    let tshex = hex.substring(0,14)
-    let ts = parseInt(tshex,16)
-    let weight = hexToWeight(hex.substring(14,20))
-    let bucketID = parseInt(hex.substring(20,26),16)
-    let binID = parseInt(hex.substring(26,32),16)
+    let chk = hex.substring(0,2)
+    hex = hex.substring(4)
     let geohex = hex.substring(32)
+    if(chk!==checksum(geohex)) throw new Error('checksum invalid')
+    let tshex = hex.substring(0,14)
+    let weighthex = hex.substring(14,20)
+    let buckethex = hex.substring(20,26)
+    let binhex = hex.substring(26,32)
+    let ts = parseInt(tshex,16)
+    let weight = hexToWeight(weighthex)
+    let bucketID = parseInt(buckethex,16)
+    let binID = parseInt(binhex,16)
     let geohash = hexToGeohash(geohex)
     let coordinates = Geohash.decode(geohash)
     return {coordinates, ts, weight, bucketID, binID}
@@ -134,24 +157,30 @@ const decodeCollectionPointID = (id) => {
 const washingStationID = (coordinates,ts,weight,binID,wsBinID) => {
     let geohash = Geohash.encode(coordinates.latitude,coordinates.longitude,14)
     let geohex = geohashToHex(geohash)
+    let chk = checksum(geohex)
     let tshex = ts.toString(16).padStart(14, '0')
     let weighthex = weightToHex(weight)
     let binHex = binID.toString(16).padStart(6,'0')
     let wsBinHex = wsBinID.toString(16).padStart(6,'0')
-    return hexToBase64(stringToHex('W') + tshex + weighthex + binHex + wsBinHex + geohex)
+    return hexToBase64(stringToHex('W') + chk + tshex + weighthex + binHex + wsBinHex + geohex)
 }
 
 const decodeWashingStationID = (id) => {
     let hex = base64ToHex(id)
     let prefix = hexToString(hex.substring(0,2))
     if(prefix!=='W') throw new Error('invalid id')
-    hex = hex.substring(2)
-    let tshex = hex.substring(0,14)
-    let ts = parseInt(tshex,16)
-    let weight = hexToWeight(hex.substring(14,20))
-    let binID = parseInt(hex.substring(20,26),16)
-    let wsBinID = parseInt(hex.substring(26,32),16)
+    let chk = hex.substring(0,2)
+    hex = hex.substring(4)
     let geohex = hex.substring(32)
+    if(chk!==checksum(geohex)) throw new Error('checksum invalid')
+    let tshex = hex.substring(0,14)
+    let weighthex = hex.substring(14,20)
+    let binhex = hex.substring(20,26)
+    let wsbinhex = hex.substring(26,32)
+    let ts = parseInt(tshex,16)
+    let weight = hexToWeight(weighthex)
+    let binID = parseInt(binhex,16)
+    let wsBinID = parseInt(wsbinhex,16)
     let geohash = hexToGeohash(geohex)
     let coordinates = Geohash.decode(geohash)
     return {coordinates, ts, weight, binID, wsBinID}
