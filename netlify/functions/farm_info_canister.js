@@ -113,6 +113,13 @@ const getIdentity = async (mobile) => {
 const createActor = async (mobile) => {
   //let principal = createPrincipal(mobile)
   const identity = await getIdentity(mobile)
+
+  /*
+  const agent = new HttpAgent({
+      // ...
+      verifyQuerySignatures: false,
+  });
+  */
   
   try{
     const agent = new HttpAgent({host: host, identity, timeout: 30000})
@@ -192,11 +199,12 @@ const updateWorker = async (mobile, farmName, name, id, role, image_cid) => {
       'FactoryManager' : {FactoryManager: null},
       'FieldManager' : {FieldManager: null}
     }
-    console.log('***************************')
-    console.log(role)
-    console.log(roles[role])
-    console.log('***************************')
+   
+    console.log('***************')
+    console.log(farmName, name, id, roles[role], image_cid)
+    console.log('***************')
     
+
     await actor.update_worker(farmName, name, id, roles[role], image_cid)
     return {success: true}
 
@@ -320,7 +328,8 @@ exports.handler = async (event, context) => {
             ret = await addFarm(body.mobile, body.farmName, body.metadata)
           }
           if(body.method && body.method==='update_worker' && body.mobile && body.farmName && body.name && body.id && body.role){
-            console.log('here')
+            console.log('********************')
+            console.log(body.mobile,body.farmName,body.name,body.id,body.role,body.image_cid)
             ret = await updateWorker(body.mobile,body.farmName,body.name,body.id,body.role,body.image_cid)
           }
           if(body.method && body.method==='delete_worker' && body.mobile && body.id){
