@@ -17,7 +17,7 @@ import {getWorker, id, getFarmFromWorkerId, getDataByFarm} from './lib/farminfo'
 
 
 
-const v='0.017'
+const v='0.018'
 
 /*
 window.getPrincipal = getPrincipal
@@ -63,6 +63,7 @@ function App() {
   const [people, setPeople] = useState([])
   const [data, setData] = useState(null)
 
+  
   useEffect(()=>{
     if(status===AppStatus.startup){
       setStatus(AppStatus.initializing)
@@ -85,6 +86,7 @@ function App() {
         getUploadedData().then()
     }
   })
+  
 
   const signUp = (mobile) => {
     setPage('signup#' + mobile)
