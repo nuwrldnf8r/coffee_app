@@ -26,46 +26,13 @@ function geohashToHex(geohash) {
 }
 
 function bucketToHex(str) {
-    // Encode the string to Uint8Array
-    const encoder = new TextEncoder()
-    const uint8Array = encoder.encode(str)
-
-    // Convert each byte to its hexadecimal representation
-    const hexArray = []
-    for (let byte of uint8Array) {
-        // Convert the byte to a hexadecimal string
-        let hex = byte.toString(16)
-
-        // Ensure each byte is represented by two characters
-        if (hex.length === 1) {
-            hex = '0' + hex
-        }
-
-        hexArray.push(hex)
-    }
-
-    // Concatenate the hexadecimal strings
-    let hex = hexArray.join('')
-    if(hex.length>14) throw new Error('Container id too long')
-    return hex.padStart(14,'0')
-}
-
-function hexToBucket(hex) {
-    // Ensure the input is a valid hexadecimal string
-    if (!/^[0-9a-fA-F]+$/.test(hex)) {
-        throw new Error('Invalid hexadecimal string');
-    }
-
-    // Split the hexadecimal string into pairs of two characters
-    const hexPairs = hex.match(/.{1,2}/g) || [];
-
-    // Convert each pair to its corresponding byte value and build a Uint8Array
-    const uint8Array = new Uint8Array(hexPairs.map(hexPair => parseInt(hexPair, 16)));
-
-    // Decode the Uint8Array to a string
-    const decoder = new TextDecoder();
-    return decoder.decode(uint8Array);
-}
+    const ar = str.split(':')
+    return parseInt(ar[ar.length-1]).toString(16).padStart(6,'0')
+ }
+ 
+ function hexToBucket(hex) {
+     return  parseInt(hex,16)
+ }
 
 function hexToGeohash(hex) {
     const base32Chars = '0123456789bcdefghjkmnpqrstuvwxyz';
@@ -82,7 +49,7 @@ function hexToGeohash(hex) {
 } 
 
 const hexToBase64 = (hex) => {
-    //ignoring for now as this function is temeramental
+    //ignoring for now as this function is temperamental
     /*
     const buffer = new Uint8Array(hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)))
     return btoa(String.fromCharCode(...buffer))
@@ -91,7 +58,7 @@ const hexToBase64 = (hex) => {
 }
 
 export const base64ToHex = (base64) => {
-    //ignoring for now as this function is temeramental
+    //ignoring for now as this function is temperamental
     /*
     const buffer = new Uint8Array(Array.from(atob(base64), char => char.charCodeAt(0)))
     return Array.from(buffer).map(byte => byte.toString(16).padStart(2, '0')).join('')
@@ -157,7 +124,7 @@ const decodeInfieldCollectionID = (id) => {
     if(prefix!=='c') throw new Error('invalid id')
     let chk = hex.substring(2,4)
     hex = hex.substring(4)
-    let geohex = hex.substring(34)    
+    let geohex = hex.substring(26)    
     if(chk!==checksum(geohex)) throw new Error('checksum invalid')
     let tshex = hex.substring(0,14)
     let weighthex = hex.substring(14,20)
@@ -189,12 +156,12 @@ const decodeCollectionPointID = (id) => {
     if(prefix!=='C') throw new Error('invalid id')
     let chk = hex.substring(2,4)
     hex = hex.substring(4)
-    let geohex = hex.substring(48)
+    let geohex = hex.substring(32)
     if(chk!==checksum(geohex)) throw new Error('checksum invalid')
     let tshex = hex.substring(0,14)
     let weighthex = hex.substring(14,20)
-    let buckethex = hex.substring(20,34)
-    let binhex = hex.substring(34,48)
+    let buckethex = hex.substring(20,26)
+    let binhex = hex.substring(26,32)
     let ts = parseInt(tshex,16)
     let weight = hexToWeight(weighthex)
     let bucketID = hexToBucket(buckethex)
@@ -222,12 +189,12 @@ const decodeWashingStationID = (id) => {
     if(prefix!=='W') throw new Error('invalid id')
     let chk = hex.substring(2,4)
     hex = hex.substring(4)
-    let geohex = hex.substring(48)
+    let geohex = hex.substring(32)
     if(chk!==checksum(geohex)) throw new Error('checksum invalid')
     let tshex = hex.substring(0,14)
     let weighthex = hex.substring(14,20)
-    let binhex = hex.substring(20,34)
-    let wsbinhex = hex.substring(34,48)
+    let binhex = hex.substring(20,26)
+    let wsbinhex = hex.substring(26,32)
     let ts = parseInt(tshex,16)
     let weight = hexToWeight(weighthex)
     
@@ -252,8 +219,8 @@ const farmID = (coordinates) => {
 const decodeFarmID = (id) => {
     let hex = base64ToHex(id)
     let prefix = hexToString(hex.substring(0,2))
-    if(prefix!=='W') throw new Error('invalid id')
-    let chk = hex.substring(0,2)
+    if(prefix!=='F') throw new Error('invalid id')
+    let chk = hex.substring(2,4)
     let geohex = hex.substring(4)
     if(chk!==checksum(geohex)) throw new Error('checksum invalid')
     let geohash = hexToGeohash(geohex)
