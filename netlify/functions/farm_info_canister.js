@@ -17,6 +17,7 @@ const idlFactory = ({ IDL }) => {
     'farm_id' : IDL.Vec(IDL.Nat8),
   });
   const Farm = IDL.Record({
+    'id': IDL.Text,
     'metadata' : IDL.Text,
     'name' : IDL.Text,
     'farmer' : IDL.Text,
@@ -38,7 +39,7 @@ const idlFactory = ({ IDL }) => {
   });
   return IDL.Service({
     'add_data' : IDL.Func([IDL.Text, IDL.Int64, IDL.Text, IDL.Text], [], []),
-    'add_farm' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'add_farm' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
     'get_data_by_farm' : IDL.Func(
         [IDL.Text, IDL.Int64, IDL.Int64],
         [IDL.Vec(Data)],
@@ -69,7 +70,8 @@ const idlFactory = ({ IDL }) => {
   });
 }
 
-const canisterId =  'nqvbb-mqaaa-aaaak-afhsq-cai' //"nqvbb-mqaaa-aaaak-afhsq-cai"
+//https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=nmwii-jaaaa-aaaak-akptq-cai
+const canisterId =  'nmwii-jaaaa-aaaak-akptq-cai' //"nqvbb-mqaaa-aaaak-afhsq-cai"
 //const host = 'https://icp-api.io'
 const host = 'https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io'
   
@@ -133,13 +135,16 @@ const createActor = async (mobile) => {
   }
 }
 
-const addFarm = async (mobile, farmName, metadata) => {
+const addFarm = async (mobile, id, farmName, metadata) => {
     try{
       const actor = await createActor(mobile)
-      console.log('adding farm')
-      await actor.add_farm(farmName, metadata)
+      console.log('adding farm..')
+      console.log('id: ' + id)
+      await actor.add_farm(id, farmName, metadata)
+      console.log('success')
       return {success:true}
     } catch(e){
+      console.log('adding farm error')
       console.log(e)
       return {error: e.message}
     }
@@ -324,8 +329,10 @@ exports.handler = async (event, context) => {
           console.log(body)
           console.log('cid: ', (body.image_cid))
           let ret = {error: 'Invalid parameters'}
-          if(body.method && body.method==='add_farm' && body.mobile && body.farmName && body.metadata){
-            ret = await addFarm(body.mobile, body.farmName, body.metadata)
+          if(body.method && body.method==='add_farm' && body.mobile && body.farmId && body.farmName && body.metadata){
+            console.log('adding farm..')
+            ret = await addFarm(body.mobile, body.farmId, body.farmName, body.metadata)
+            console.log(ret)
           }
           if(body.method && body.method==='update_worker' && body.mobile && body.farmName && body.name && body.id && body.role){
             console.log('********************')

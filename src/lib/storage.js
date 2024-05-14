@@ -1,4 +1,5 @@
 import Geohash from 'latlon-geohash'
+import CryptoJS from 'crypto-js'
 /*
     Need to store locally, then check if internet connection is available and store in db.
     Update when last uploaded online.
@@ -24,6 +25,15 @@ function geohashToHex(geohash) {
     return hexString;
 }
 
+function bucketToHex(str) {
+    const ar = str.split(':')
+    return parseInt(ar[ar.length-1]).toString(16).padStart(6,'0')
+ }
+ 
+ function hexToBucket(hex) {
+     return  parseInt(hex,16)
+ }
+
 function hexToGeohash(hex) {
     const base32Chars = '0123456789bcdefghjkmnpqrstuvwxyz';
     let geohash = '';
@@ -38,15 +48,22 @@ function hexToGeohash(hex) {
     return geohash;
 } 
 
-function hexToBase64(hex) {
+const hexToBase64 = (hex) => {
+    //ignoring for now as this function is temperamental
+    /*
     const buffer = new Uint8Array(hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)))
-    return btoa(String.fromCharCode(...buffer)).split('=').join('')
+    return btoa(String.fromCharCode(...buffer))
+    */
+   return hex
 }
 
-function base64ToHex(base64) {
-    while(base64.length%4!==0)base64 += '='
-    const buffer = new Uint8Array(atob(base64).split('').map(char => char.charCodeAt(0)))
+export const base64ToHex = (base64) => {
+    //ignoring for now as this function is temperamental
+    /*
+    const buffer = new Uint8Array(Array.from(atob(base64), char => char.charCodeAt(0)))
     return Array.from(buffer).map(byte => byte.toString(16).padStart(2, '0')).join('')
+    */
+   return base64
 }
 
 function weightToHex(w) {
@@ -61,6 +78,7 @@ function hexToWeight(h) {
 }
 
 function stringToHex(str) {
+    
     let hex = '';
     for (let i = 0; i < str.length; i++) {
       const code = str.charCodeAt(i);
@@ -79,26 +97,23 @@ function hexToString(hex) {
     return str;
 }
 
-async function sha256(message) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(message);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-    return hashHex;
-  }
+function sha256(message) {
+    return CryptoJS.SHA256(message).toString(CryptoJS.enc.Hex)
+}
 
 const checksum = (geohashHex) => {
-    return sha256(geohashHex).substr(0,2)
+    const hash = sha256(geohashHex)
+    console.log('hash: ' + hash)
+    return hash.substring(0,2)
+    //return sha256(geohashHex).substr(0,2)
 }
 
 const infieldCollectionID = (coordinates,ts,weight,bucketID) => {
-    let geohash = Geohash.encode(coordinates.latitude,coordinates.longitude,14)
+    let geohash = Geohash.encode(coordinates.latitude,coordinates.longitude,12)
     let geohex = geohashToHex(geohash)
     let tshex = ts.toString(16).padStart(14, '0')
     let weighthex = weightToHex(weight)
-    console.log('weight',weighthex.length)
-    let bucketHex = bucketID.toString(16).padStart(6,'0')
+    let bucketHex = bucketToHex(bucketID)
     let chk = checksum(geohex)
     return hexToBase64(stringToHex('c') + chk + tshex + weighthex + bucketHex + geohex)
 }
@@ -107,37 +122,39 @@ const decodeInfieldCollectionID = (id) => {
     let hex = base64ToHex(id)
     let prefix = hexToString(hex.substring(0,2))
     if(prefix!=='c') throw new Error('invalid id')
-    let chk = hex.substring(0,2)
+    let chk = hex.substring(2,4)
     hex = hex.substring(4)
-    let geohex = hex.substring(26)
+    let geohex = hex.substring(26)    
     if(chk!==checksum(geohex)) throw new Error('checksum invalid')
     let tshex = hex.substring(0,14)
     let weighthex = hex.substring(14,20)
     let buckethex = hex.substring(20,26)
     let ts = parseInt(tshex,16)
     let weight = hexToWeight(weighthex)
-    let bucketID = parseInt(buckethex,16)
+    let bucketID = hexToBucket(buckethex)
     let geohash = hexToGeohash(geohex)
     let coordinates = Geohash.decode(geohash)
-    return {coordinates, ts, weight, bucketID}
+    return {coordinates, ts, weight, bucketID}    
 }
 
 const collectionPointID = (coordinates,ts,weight,bucketID,binID) => {
-    let geohash = Geohash.encode(coordinates.latitude,coordinates.longitude,14)
+    let geohash = Geohash.encode(coordinates.latitude,coordinates.longitude,12)
     let geohex = geohashToHex(geohash)
+    console.log(geohex)
     let chk = checksum(geohex)
     let tshex = ts.toString(16).padStart(14, '0')
     let weighthex = weightToHex(weight)
-    let bucketHex = bucketID.toString(16).padStart(6,'0')
-    let binHex = binID.toString(16).padStart(6,'0')
+    let bucketHex = bucketToHex(bucketID)
+    let binHex = bucketToHex(binID)
     return hexToBase64(stringToHex('C') + chk + tshex + weighthex + bucketHex + binHex + geohex)
+    
 }
 
 const decodeCollectionPointID = (id) => {
     let hex = base64ToHex(id)
     let prefix = hexToString(hex.substring(0,2))
     if(prefix!=='C') throw new Error('invalid id')
-    let chk = hex.substring(0,2)
+    let chk = hex.substring(2,4)
     hex = hex.substring(4)
     let geohex = hex.substring(32)
     if(chk!==checksum(geohex)) throw new Error('checksum invalid')
@@ -147,29 +164,30 @@ const decodeCollectionPointID = (id) => {
     let binhex = hex.substring(26,32)
     let ts = parseInt(tshex,16)
     let weight = hexToWeight(weighthex)
-    let bucketID = parseInt(buckethex,16)
-    let binID = parseInt(binhex,16)
+    let bucketID = hexToBucket(buckethex)
+    let binID = hexToBucket(binhex)
     let geohash = hexToGeohash(geohex)
     let coordinates = Geohash.decode(geohash)
     return {coordinates, ts, weight, bucketID, binID}
 }
 
 const washingStationID = (coordinates,ts,weight,binID,wsBinID) => {
-    let geohash = Geohash.encode(coordinates.latitude,coordinates.longitude,14)
+    let geohash = Geohash.encode(coordinates.latitude,coordinates.longitude,12)
     let geohex = geohashToHex(geohash)
     let chk = checksum(geohex)
     let tshex = ts.toString(16).padStart(14, '0')
     let weighthex = weightToHex(weight)
-    let binHex = binID.toString(16).padStart(6,'0')
-    let wsBinHex = wsBinID.toString(16).padStart(6,'0')
+    let binHex = bucketToHex(binID)
+    let wsBinHex = bucketToHex(wsBinID)
     return hexToBase64(stringToHex('W') + chk + tshex + weighthex + binHex + wsBinHex + geohex)
+    //4 14 6 14 14
 }
 
 const decodeWashingStationID = (id) => {
     let hex = base64ToHex(id)
     let prefix = hexToString(hex.substring(0,2))
     if(prefix!=='W') throw new Error('invalid id')
-    let chk = hex.substring(0,2)
+    let chk = hex.substring(2,4)
     hex = hex.substring(4)
     let geohex = hex.substring(32)
     if(chk!==checksum(geohex)) throw new Error('checksum invalid')
@@ -179,11 +197,34 @@ const decodeWashingStationID = (id) => {
     let wsbinhex = hex.substring(26,32)
     let ts = parseInt(tshex,16)
     let weight = hexToWeight(weighthex)
+    
     let binID = parseInt(binhex,16)
     let wsBinID = parseInt(wsbinhex,16)
     let geohash = hexToGeohash(geohex)
     let coordinates = Geohash.decode(geohash)
     return {coordinates, ts, weight, binID, wsBinID}
+}
+
+const farmID = (coordinates) => {
+    let geohash = Geohash.encode(coordinates.latitude,coordinates.longitude,12)
+    console.log('geohash: ' + geohash)
+    let geohex = geohashToHex(geohash)
+    console.log('geohex: ' + geohex)
+    let chk = checksum(geohex)
+    console.log('checksum: ' + chk)
+    console.log('hex id: ' + stringToHex('F') + chk + geohex)
+    return hexToBase64(stringToHex('F') + chk + geohex)
+}
+
+const decodeFarmID = (id) => {
+    let hex = base64ToHex(id)
+    let prefix = hexToString(hex.substring(0,2))
+    if(prefix!=='F') throw new Error('invalid id')
+    let chk = hex.substring(2,4)
+    let geohex = hex.substring(4)
+    if(chk!==checksum(geohex)) throw new Error('checksum invalid')
+    let geohash = hexToGeohash(geohex)
+    return {geohash}
 }
 
 const decode = (id) => {
@@ -192,6 +233,7 @@ const decode = (id) => {
     if(prefix==='c') return {id, type: 'c', data: decodeInfieldCollectionID(id)}
     if(prefix==='C') return {id, type: 'C', data: decodeCollectionPointID(id)}
     if(prefix==='W') return {id, type: 'W', data: decodeWashingStationID(id)}
+    if(prefix==='F') return {id, type: 'F', data: decodeFarmID(id)}
     return {type: 'none', data: id}
 }
 
@@ -201,6 +243,8 @@ export const ID = {
     collectionPointID,
     decodeCollectionPointID,
     washingStationID,
+    farmID,
+    decodeFarmID,
     decodeWashingStationID,
     decode,
     base64ToHex,
